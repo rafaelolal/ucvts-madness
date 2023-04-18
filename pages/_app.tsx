@@ -1,5 +1,5 @@
 import 'normalize.css'
-import '@/styles/global.css'
+import '@/styles/global.scss'
 import type { AppProps } from 'next/app'
 import { AppWrapper } from '@/context/state'
 
