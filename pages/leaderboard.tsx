@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Card, Input, Button, Form, Space, Table, Typography } from 'antd'
 import Link from 'next/link'
 import { useState } from 'react'
+import Navbar from '@/components/navbar'
 
 const getDataSource = (data: { name: string; points: number }[]) => {
   data.sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
@@ -57,17 +58,9 @@ export default function LeaderboardPage(props: {
 
   return (
     <>
-      <Typography.Title>Leaderboard</Typography.Title>
+      <Navbar />
 
-      <Link href='/bracket/'>
-        <Button
-          type='primary'
-          loading={isLiveBracketButtonLoading}
-          onClick={() => setIsLiveBracketButtonLoading(true)}
-        >
-          Live Bracket
-        </Button>
-      </Link>
+      <Typography.Title>Leaderboard</Typography.Title>
 
       <Table
         pagination={{

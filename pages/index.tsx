@@ -79,7 +79,7 @@ export default function IndexPage() {
   }
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log({ signInFinishError: errorInfo })
+    throw errorInfo
   }
 
   if (isLoading) {

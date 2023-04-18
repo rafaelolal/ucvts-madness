@@ -40,7 +40,6 @@ export async function getGameList() {
     })
 
     const rows = response.data.values!.slice(1)
-    console.log({ rows })
     return rows
   } catch (error) {
     throw error

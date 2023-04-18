@@ -1,8 +1,8 @@
-import axios from 'axios'
 import { Card, Input, Button, Form, Space, Table, Typography } from 'antd'
 import Link from 'next/link'
 import { useState } from 'react'
 import { getGameList, getTeamList } from '@/sheets'
+import Navbar from '@/components/navbar'
 
 const getDataSource = (teams: string[][]) => {
   teams.sort((a, b) => a[0].localeCompare(b[0]))
@@ -29,34 +29,11 @@ const columns = [
 ]
 
 export default function TeamsPage(props: { teams: string[][] }) {
-  const [isLiveBracketButtonLoading, setIsLiveBracketButtonLoading] =
-    useState(false)
-  const [isLeaderboardButtonLoading, setIsLeaderboardButtonLoading] =
-    useState(false)
-
   return (
     <>
+      <Navbar />
+
       <Typography.Title>Teams</Typography.Title>
-
-      <Link href='/bracket/'>
-        <Button
-          type='primary'
-          loading={isLiveBracketButtonLoading}
-          onClick={() => setIsLiveBracketButtonLoading(true)}
-        >
-          Live Bracket
-        </Button>
-      </Link>
-
-      <Link href='/leaderboard/'>
-        <Button
-          type='primary'
-          loading={isLeaderboardButtonLoading}
-          onClick={() => setIsLeaderboardButtonLoading(true)}
-        >
-          Leaderboard
-        </Button>
-      </Link>
 
       <Table
         pagination={{

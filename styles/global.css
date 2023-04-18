@@ -51,7 +51,9 @@ li.game-top {
 
 li.game-spacer {
   border-right: 1px solid #aaa;
-  min-height: 40px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
 }
 
 li.game-bottom {
