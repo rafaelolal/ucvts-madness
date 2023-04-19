@@ -25,15 +25,17 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
   AppContext = createContext(sharedState)
 
   useEffect(() => {
+    setIsLoading(true)
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user)
+        setIsLoading(false)
       } else {
         setUser(null)
+        setIsLoading(false)
       }
-      setIsLoading(false)
     })
-  }, [])
+  }, [user])
 
   return (
     <>
