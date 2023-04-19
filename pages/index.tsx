@@ -2,7 +2,7 @@ import Head from 'next/head'
 import axios from 'axios'
 import { Agent } from 'https'
 import { useState } from 'react'
-import { Card, Input, Button, Form, Space, Typography } from 'antd'
+import { Card, Input, Button, Form, Space, Typography, Spin } from 'antd'
 import { MailOutlined } from '@ant-design/icons'
 import { useAppContext } from '@/context/state'
 import { useRouter } from 'next/router'
@@ -37,7 +37,6 @@ export default function IndexPage() {
     password: string
     confirmPassword: string
   }) => {
-    setIsSubmitting(true)
     if (isSigningUp) {
       createUserWithEmailAndPassword(auth, values.email, values.password)
         .then((userCredential) => {
@@ -48,20 +47,23 @@ export default function IndexPage() {
               email: user.email,
             })
             .then(() => {
-              notify.success('Account created successfully')
               router.replace('/bracket')
             })
             .catch((error) => {
               deleteUser(auth.currentUser as User)
-              notify.error(`user/create/ (${error.code}): ${error.message}`)
+              notify.error({
+                message: `user/create/ (${error.code}): ${error.message}`,
+                placement: 'bottomRight',
+              })
               setIsSubmitting(false)
               throw error
             })
         })
         .catch((error) => {
-          notify.error(
-            `"Firebase create user error (${error.code}): ${error.message}`
-          )
+          notify.error({
+            message: `Firebase create user error (${error.code}): ${error.message}`,
+            placement: 'bottomRight',
+          })
           setIsSubmitting(false)
           throw error
         })
@@ -71,7 +73,10 @@ export default function IndexPage() {
           router.replace('/bracket')
         })
         .catch((error) => {
-          notify.error(`Sign in error (${error.code}): ${error.message}`)
+          notify.error({
+            message: `Sign in error (${error.code}): ${error.message}`,
+            placement: 'bottomRight',
+          })
           setIsSubmitting(false)
           throw error
         })
@@ -83,11 +88,20 @@ export default function IndexPage() {
   }
 
   if (isLoading) {
-    return <Typography.Title>Loading...</Typography.Title>
+    return (
+      <Container>
+        <Spin />
+      </Container>
+    )
   }
 
-  if (user) {
+  if (user !== null) {
     router.replace('/bracket')
+    return (
+      <Container>
+        <Spin />
+      </Container>
+    )
   }
 
   return (
