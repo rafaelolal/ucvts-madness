@@ -4,7 +4,7 @@ import { useAppContext } from '@/context/state'
 import { auth } from '@/firebaseConfig'
 import { getGameList, getTeamList } from '@/sheets'
 
-import { Card, Input, Button, Form, Space, Table, Typography } from 'antd'
+import { Card, Input, Button, Form, Space, Table, Typography, Spin } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
@@ -14,14 +14,25 @@ export default function BracketPage(props: {
   games: string[][]
 }) {
   const { user, isLoading, notify } = useAppContext()
+  const router = useRouter()
 
-  function nearestPowerOf2(n: number) {
-    return 1 << (31 - Math.clz32(n))
+  const pow2ceil = (v: number) => {
+    var p = 2
+    while ((v >>= 1)) {
+      p <<= 1
+    }
+    return p
   }
 
   const buildBracket = () => {
-    const teamCount = 8 // nearestPowerOf2(props.teams.length + 1)
-    const gameCount = 15 // teamCount - 1
+    // for n teams, there are n-1 games. * 2 for double elimination
+    // ceil to power of 2 to make perfect bracket, and then subtract 1
+    const gameCount = pow2ceil((props.teams.length - 1) * 2) - 1
+    var myBorderColor = '#0F0'
+    const numberOfLevels = 1 + Math.floor(Math.log2(gameCount))
+    var toColor = numberOfLevels - 1
+
+    console.log({ toColor })
     const gameComponents = []
     // creating all game components, games not
     // decided yet should have dashes "-" in the sheet
@@ -29,30 +40,43 @@ export default function BracketPage(props: {
       const game = props.games[i]
       gameComponents.push(
         <Fragment key={`filled-${game[0]}${game[1]}`}>
-          <li className='spacer'>{i == 4 ? 'Losers Bracket' : `\xA0`}</li>
+          <li className='spacer'>&nbsp;</li>
 
           <li
+            style={{ borderColor: myBorderColor }}
             className={`game game-top ${
               game[4] == 'Yes' && +game[2] > +game[3] && 'winner'
             }`}
           >
-            {game[0]} <span>{game[2]}</span>
+            {game[0] || '\xA0'} <span>{game[2] || '\xA0'}</span>
           </li>
 
-          <li className='game game-spacer'>{game[5]}</li>
+          <li
+            style={{ borderColor: myBorderColor }}
+            className='game game-spacer'
+          >
+            {game[5] || '\xA0'}
+          </li>
 
           <li
+            style={{ borderColor: myBorderColor }}
             className={`game game-bottom ${
               game[4] == 'Yes' && +game[3] > +game[2] && 'winner'
             }`}
           >
-            {game[1]} <span>{game[3]}</span>
+            {game[1] || '\xA0'} <span>{game[3] || '\xA0'}</span>
           </li>
         </Fragment>
       )
+
+      if ((i + 1) % toColor == 0) {
+        myBorderColor = myBorderColor == '#0F0' ? '#F00' : '#0F0'
+      }
+      if ((i + 1) % (toColor * 2) == 0) {
+        toColor /= 2
+      }
     }
 
-    const numberOfLevels = 4 // 1 + Math.floor(Math.log2(gameCount))
     var addGames = 1
     const roundComponents = []
     // the bracket requires knowledge of how many levels the binary
@@ -92,11 +116,12 @@ export default function BracketPage(props: {
   }
 
   if (isLoading) {
-    return <Typography.Title>Loading...</Typography.Title>
+    return <Spin />
   }
 
   if (!user) {
-    return <SignInRequired />
+    router.replace('/')
+    return <Spin />
   }
 
   return (
@@ -113,26 +138,38 @@ export default function BracketPage(props: {
 
       <Space>
         <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
-          <Typography.Title>{props.games[15][5]}</Typography.Title>
+          <Typography.Title>
+            {props.games[props.games.length - 3][5]}
+          </Typography.Title>
           <Typography.Text>
-            {props.games[15][0]} ({props.games[15][2]}) vs. {props.games[15][1]}{' '}
-            ({props.games[15][3]})
+            {props.games[props.games.length - 3][0]} (
+            {props.games[props.games.length - 3][2]}) vs.{' '}
+            {props.games[props.games.length - 3][1]} (
+            {props.games[props.games.length - 3][3]})
           </Typography.Text>
         </Space>
 
         <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
-          <Typography.Title>{props.games[16][5]}</Typography.Title>
+          <Typography.Title>
+            {props.games[props.games.length - 2][5]}
+          </Typography.Title>
           <Typography.Text>
-            {props.games[16][0]} ({props.games[16][2]}) vs. {props.games[16][1]}{' '}
-            ({props.games[16][3]})
+            {props.games[props.games.length - 2][0]} (
+            {props.games[props.games.length - 2][2]}) vs.{' '}
+            {props.games[props.games.length - 2][1]} (
+            {props.games[props.games.length - 2][3]})
           </Typography.Text>
         </Space>
 
         <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
-          <Typography.Title>{props.games[17][5]}</Typography.Title>
+          <Typography.Title>
+            {props.games[props.games.length - 1][5]}
+          </Typography.Title>
           <Typography.Text>
-            {props.games[17][0]} ({props.games[17][2]}) vs. {props.games[17][1]}{' '}
-            ({props.games[17][3]})
+            {props.games[props.games.length - 1][0]} (
+            {props.games[props.games.length - 1][2]}) vs.{' '}
+            {props.games[props.games.length - 1][1]} (
+            {props.games[props.games.length - 1][3]})
           </Typography.Text>
         </Space>
       </Space>

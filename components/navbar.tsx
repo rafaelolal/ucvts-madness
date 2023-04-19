@@ -62,8 +62,7 @@ export default function Navbar() {
         type='primary'
         htmlType='submit'
         onClick={() => {
-          auth.signOut()
-          router.replace('/')
+          auth.signOut().then(() => router.replace('/'))
         }}
       >
         Sign Out
