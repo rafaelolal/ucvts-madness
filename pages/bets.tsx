@@ -1,66 +1,193 @@
 import Navbar from '@/components/navbar'
-import { Button, Typography } from 'antd'
+import { useAppContext } from '@/context/state'
+import { getGameList, getTeamList } from '@/sheets'
+import { Button, Form, Modal, Select, Space, Spin, Typography } from 'antd'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import { isLabeledStatement } from 'typescript'
+import useSWR from 'swr'
+import Timer from '@/components/timer'
 
-export default function BetsPage() {
+export default function BetsPage(props: {
+  teams: string[][]
+  games: string[][]
+}) {
+  const { user, isLoading, notify } = useAppContext()
+  const router = useRouter()
+
   const [canMakeBets, setCanMakeBets] = useState(true)
-  const [tournamentDatetime, setTournamentDatetime] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  })
+  const [betData, setBetData] = useState(undefined)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isBetsSubmitButtonLoading, setIsBetsSubmitButtonLoading] =
+    useState(false)
+  const [form] = Form.useForm()
 
   useEffect(() => {
-    const target = new Date('Tue Apr 20 2023 14:50:00 GMT-0400')
+    if (!user) {
+      return
+    }
 
-    const interval = setInterval(() => {
-      const now = new Date()
-      const difference = target.getTime() - now.getTime()
+    axios
+      .get(`http://127.0.0.1:8000/api/user/${user.uid}/bet/`)
+      .then((response) => setBetData(response.data))
+      .catch((error) => {
+        if (error.response.status == 404) {
+          setBetData(null)
+          return
+        }
 
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24))
-      const hours = Math.floor(
-        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      )
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+        notify.error({
+          message: `user/bet/ (${error}): ${error.message}`,
+          position: 'bottomRight',
+        })
 
-      setTournamentDatetime({
-        days,
-        hours,
-        minutes,
-        seconds,
+        throw error
       })
+  }, [user])
 
-      if ([days, hours, minutes, seconds].every((value) => value <= 0)) {
-        setCanMakeBets(false)
-      }
-    }, 1000)
+  const onFinish = async () => {
+    try {
+      const values = await form.validateFields()
 
-    return () => clearInterval(interval)
-  }, [])
+      axios
+        .post('http://127.0.0.1:8000/api/bet/create/', {
+          user: user.uid,
+          order: Object.values(values).join('*'),
+        })
+        .then(() => {
+          notify.success({
+            message: 'Bets placed successfully!',
+            position: 'bottomRight',
+          })
+          setBetData(Object.values(values).join('*'))
+          setIsBetsSubmitButtonLoading(false)
+          setIsModalOpen(false)
+        })
+        .catch((error) => {
+          notify.error({
+            message: `bet/create/ (${error.code}): ${error.message}`,
+            placement: 'bottomRight',
+          })
+          setIsBetsSubmitButtonLoading(false)
+          throw error
+        })
+    } catch (error) {
+      setIsBetsSubmitButtonLoading(false)
+      throw error
+    }
+  }
+
+  const ordinalOf = (i: number) => {
+    var j = i % 10,
+      k = i % 100
+    if (j == 1 && k != 11) {
+      return i + 'st'
+    }
+    if (j == 2 && k != 12) {
+      return i + 'nd'
+    }
+    if (j == 3 && k != 13) {
+      return i + 'rd'
+    }
+    return i + 'th'
+  }
+
+  if (isLoading || betData === undefined) {
+    return <Spin />
+  }
+
+  if (!user) {
+    router.replace('/')
+    return <Spin />
+  }
 
   return (
     <>
       <Navbar />
 
-      {canMakeBets ? (
-        <>
-          <Typography.Title>Time Until Tournament</Typography.Title>
-          <Typography.Text>
-            {tournamentDatetime.days} days and {tournamentDatetime.hours}:
-            {tournamentDatetime.minutes}:{tournamentDatetime.seconds}
-          </Typography.Text>
-        </>
-      ) : (
-        <p>Games Already Started</p>
-      )}
-
       <Typography.Title>Your Bets</Typography.Title>
 
-      <Button disabled={!canMakeBets} type='primary'>
+      <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
+
+      {canMakeBets &&
+        (betData ? (
+          <p>You have already placed a bet!</p>
+        ) : (
+          <p>Place your first bet!</p>
+        ))}
+
+      <Button
+        disabled={!canMakeBets || betData}
+        type='primary'
+        onClick={() => setIsModalOpen(true)}
+      >
         Make Bets
       </Button>
+
+      <Modal
+        centered
+        title='Your Bets'
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={[
+          <Space key='footer'>
+            <Button
+              onClick={() => {
+                setIsModalOpen(false)
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type='primary'
+              loading={isBetsSubmitButtonLoading}
+              onClick={() => {
+                setIsBetsSubmitButtonLoading(true)
+                onFinish()
+              }}
+            >
+              Submit
+            </Button>
+          </Space>,
+        ]}
+      >
+        <Form form={form}>
+          {[...Array(props.teams.length)].map((e, i) => (
+            <Form.Item
+              rules={[
+                {
+                  required: true,
+                  message: `Please select the team you bet will be ${ordinalOf(
+                    i + 1
+                  )}!`,
+                },
+              ]}
+              name={`place${i}`}
+              label={`${ordinalOf(i + 1)} Place`}
+            >
+              <Select>
+                {props.teams.map((e) => (
+                  <Select.Option value={e[0]}>{e[0]}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          ))}
+        </Form>
+      </Modal>
     </>
   )
+}
+
+export async function getServerSideProps() {
+  const teams = await getTeamList()
+  const games = await getGameList()
+
+  return {
+    props: {
+      teams,
+      games,
+    },
+  }
 }
