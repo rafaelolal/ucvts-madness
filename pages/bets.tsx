@@ -1,6 +1,6 @@
 import Navbar from '@/components/navbar'
 import { useAppContext } from '@/context/state'
-import { getGameList, getTeamList } from '@/sheets'
+import { getSheetData } from '@/sheets'
 import { Button, Form, Modal, Select, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -8,16 +8,14 @@ import { useEffect, useState } from 'react'
 import { isLabeledStatement } from 'typescript'
 import useSWR from 'swr'
 import Timer from '@/components/timer'
+import { GameType, TeamType } from '@/types'
 
-export default function BetsPage(props: {
-  teams: string[][]
-  games: string[][]
-}) {
+export default function BetsPage(props: { teams: TeamType[] }) {
   const { user, isLoading, notify } = useAppContext()
   const router = useRouter()
 
   const [canMakeBets, setCanMakeBets] = useState(true)
-  const [betData, setBetData] = useState(undefined)
+  const [betData, setBetData] = useState<string | null | undefined>(undefined)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isBetsSubmitButtonLoading, setIsBetsSubmitButtonLoading] =
     useState(false)
@@ -52,7 +50,7 @@ export default function BetsPage(props: {
 
       axios
         .post('http://127.0.0.1:8000/api/bet/create/', {
-          user: user.uid,
+          user: user!.uid,
           order: Object.values(values).join('*'),
         })
         .then(() => {
@@ -166,8 +164,8 @@ export default function BetsPage(props: {
               label={`${ordinalOf(i + 1)} Place`}
             >
               <Select>
-                {props.teams.map((e) => (
-                  <Select.Option value={e[0]}>{e[0]}</Select.Option>
+                {props.teams.map((team) => (
+                  <Select.Option value={team.name}>{team.name}</Select.Option>
                 ))}
               </Select>
             </Form.Item>
@@ -179,13 +177,11 @@ export default function BetsPage(props: {
 }
 
 export async function getServerSideProps() {
-  const teams = await getTeamList()
-  const games = await getGameList()
+  const teams = await getSheetData('Teams')
 
   return {
     props: {
       teams,
-      games,
     },
   }
 }

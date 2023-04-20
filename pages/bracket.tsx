@@ -1,9 +1,6 @@
-import Navbar from '@/components/navbar'
-import SignInRequired from '@/components/sign-in-required'
 import { useAppContext } from '@/context/state'
-import { auth } from '@/firebaseConfig'
 import { getSheetData } from '@/sheets'
-
+import { GameType } from '@/types'
 import { Card, Input, Button, Form, Space, Table, Typography, Spin } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -17,14 +14,6 @@ import {
   IRenderSeedProps,
 } from 'react-brackets'
 
-// constants for each sheets column
-const TEAM_1_NAME = 0
-const TEAM_1_SCORE = 1
-const TEAM_2_NAME = 2
-const TEAM_2_SCORE = 3
-const IS_FINISHED = 4
-const DESCRIPTION = 5
-
 const pow2ceil = (v: number) => {
   var p = 2
   while ((v >>= 1)) {
@@ -33,7 +22,7 @@ const pow2ceil = (v: number) => {
   return p
 }
 
-const getRounds = (games: string[][], teamCount: number) => {
+const getRounds = (games: GameType[], teamCount: number) => {
   console.log({ teamCount })
   const gameCount = pow2ceil(teamCount - 1) - 1
   const roundCount = Math.floor(Math.log2(gameCount)) + 1
@@ -44,16 +33,16 @@ const getRounds = (games: string[][], teamCount: number) => {
       id: i,
       teams: [
         {
-          name: games[i][TEAM_1_NAME],
-          points: games[i][TEAM_1_SCORE] ? +games[i][TEAM_1_SCORE] : 0,
+          name: games[i].team1Name,
+          points: games[i].team1Points ? +games[i].team1Points : 0,
         },
         {
-          name: games[i][TEAM_2_NAME],
-          points: games[i][TEAM_2_SCORE] ? +games[i][TEAM_2_SCORE] : 0,
+          name: games[i].team2Name,
+          points: games[i].team2Points ? +games[i].team2Points : 0,
         },
       ],
-      isFinished: games[i][IS_FINISHED],
-      description: games[i][DESCRIPTION],
+      isFinished: games[i].isFinished,
+      description: games[i].description,
     })
   }
 
@@ -88,7 +77,7 @@ const getRounds = (games: string[][], teamCount: number) => {
 }
 
 const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
-  return <div style={{ textAlign: 'center' }}>{title}</div>
+  return <h3 style={{ textAlign: 'center' }}>{title}</h3>
 }
 
 const CustomSeed = ({
@@ -110,9 +99,7 @@ const CustomSeed = ({
               className='justify-content-between'
               style={{
                 backgroundColor:
-                  seed.isFinished == 'TRUE' && team == winner
-                    ? 'green'
-                    : 'black',
+                  seed.isFinished && team == winner ? 'green' : 'black',
               }}
             >
               <p>{team.name || '\xa0'}</p>
@@ -121,14 +108,20 @@ const CustomSeed = ({
           ))}
         </div>
       </SeedItem>
+
+      <div>
+        <p style={{ margin: 0, padding: 0, color: '#aaa' }}>
+          {seed.description}
+        </p>
+      </div>
     </Seed>
   )
 }
 
 export default function BracketPage(props: {
-  winnersBracket: string[][]
-  losersBracket: string[][]
-  otherGames: string[][]
+  winnersBracket: GameType[]
+  losersBracket: GameType[]
+  otherGames: GameType[]
   teamCount: number
 }) {
   const { user, isLoading, notify } = useAppContext()
@@ -176,16 +169,16 @@ export default function BracketPage(props: {
 
       <Space>
         {props.otherGames.map((game) => {
-          if (!game[DESCRIPTION]) {
+          if (!game.description) {
             return
           }
 
           return (
             <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
-              <h1>{game[DESCRIPTION]}</h1>
+              <h1>{game.description}</h1>
               <p>
-                {game[TEAM_1_NAME]} ({game[TEAM_2_NAME]}) vs.{' '}
-                {game[TEAM_1_SCORE]} ({game[TEAM_2_SCORE]})
+                {game.team1Name} ({game.team2Name}) vs. {game.team1Points} (
+                {game.team2Points})
               </p>
             </Space>
           )

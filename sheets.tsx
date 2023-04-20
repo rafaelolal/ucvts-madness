@@ -18,6 +18,7 @@ export async function getSheetData(sheetName: string) {
 
     const rows = response.data.values!.slice(1)
     var formattedRows
+
     if (
       ["Winners' Bracket", "Losers' Bracket", 'Other Games'].includes(sheetName)
     ) {
@@ -27,8 +28,8 @@ export async function getSheetData(sheetName: string) {
           team1Points: row[1],
           team2Name: row[2],
           team2Points: row[3],
-          isFinished: row[4],
-          description: row[5],
+          isFinished: row[4] == 'TRUE' ? true : false,
+          description: row[5] || '',
         }
       })
     } else if (['Teams'].includes(sheetName)) {
