@@ -31,9 +31,7 @@ const columns = [
 export default function TeamsPage(props: { teams: string[][] }) {
   return (
     <>
-      <Navbar />
-
-      <Typography.Title>Teams</Typography.Title>
+      <h1>Teams</h1>
 
       <Table
         pagination={{

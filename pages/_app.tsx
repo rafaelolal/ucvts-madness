@@ -3,6 +3,7 @@ import '@/styles/global.scss'
 import type { AppProps } from 'next/app'
 import { AppWrapper } from '@/context/state'
 import Script from 'next/script'
+import Navbar from '@/components/navbar'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -13,6 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
         strategy='beforeInteractive'
       />
 
+      <Navbar />
       <Component {...pageProps} />
     </AppWrapper>
   )

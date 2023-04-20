@@ -58,9 +58,7 @@ export default function LeaderboardPage(props: {
 
   return (
     <>
-      <Navbar />
-
-      <Typography.Title>Leaderboard</Typography.Title>
+      <h1>Leaderboard</h1>
 
       <Table
         pagination={{

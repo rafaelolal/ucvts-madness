@@ -104,9 +104,7 @@ export default function BetsPage(props: {
 
   return (
     <>
-      <Navbar />
-
-      <Typography.Title>Your Bets</Typography.Title>
+      <h1>Your Bets</h1>
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 

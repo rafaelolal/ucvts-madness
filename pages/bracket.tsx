@@ -2,118 +2,137 @@ import Navbar from '@/components/navbar'
 import SignInRequired from '@/components/sign-in-required'
 import { useAppContext } from '@/context/state'
 import { auth } from '@/firebaseConfig'
-import { getGameList, getTeamList } from '@/sheets'
+import { getSheetData } from '@/sheets'
 
 import { Card, Input, Button, Form, Space, Table, Typography, Spin } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
+import {
+  Bracket,
+  IRoundProps,
+  Seed,
+  SeedItem,
+  SeedTeam,
+  IRenderSeedProps,
+} from 'react-brackets'
+
+// constants for each sheets column
+const TEAM_1_NAME = 0
+const TEAM_1_SCORE = 1
+const TEAM_2_NAME = 2
+const TEAM_2_SCORE = 3
+const IS_FINISHED = 4
+const DESCRIPTION = 5
+
+const pow2ceil = (v: number) => {
+  var p = 2
+  while ((v >>= 1)) {
+    p <<= 1
+  }
+  return p
+}
+
+const getRounds = (games: string[][], teamCount: number) => {
+  console.log({ teamCount })
+  const gameCount = pow2ceil(teamCount - 1) - 1
+  const roundCount = Math.floor(Math.log2(gameCount)) + 1
+
+  const seeds = []
+  for (var i = 0; i < gameCount; i++) {
+    seeds.push({
+      id: i,
+      teams: [
+        {
+          name: games[i][TEAM_1_NAME],
+          points: games[i][TEAM_1_SCORE] ? +games[i][TEAM_1_SCORE] : 0,
+        },
+        {
+          name: games[i][TEAM_2_NAME],
+          points: games[i][TEAM_2_SCORE] ? +games[i][TEAM_2_SCORE] : 0,
+        },
+      ],
+      isFinished: games[i][IS_FINISHED],
+      description: games[i][DESCRIPTION],
+    })
+  }
+
+  const rounds = []
+  var addGames = 1
+  // the bracket requires knowledge of how many levels the binary
+  // tree will have, this creates and adds seeds to "rounds."
+  // bracket is built "backwards," it starts by creating the last
+  // round and adding the last seed
+  for (var i = roundCount; i > 0; i--) {
+    if (seeds.length < addGames) {
+      break
+    }
+
+    rounds.push({
+      title: `Round ${i}`,
+      seeds: seeds.slice(-addGames),
+    })
+
+    // popping out the seeds sliced in above
+    for (var j = 0; j < addGames; j++) {
+      seeds.pop()
+    }
+
+    // a round is created every iteration.
+    // rounds are created last to first, so
+    // numbers of seeds per round increase as we go
+    addGames *= 2
+  }
+
+  return rounds.reverse()
+}
+
+const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
+  return <div style={{ textAlign: 'center' }}>{title}</div>
+}
+
+const CustomSeed = ({
+  seed,
+  breakpoint,
+  roundIndex,
+  seedIndex,
+}: IRenderSeedProps) => {
+  const winner = seed.teams.find(
+    (team) => team.points == Math.max(...seed.teams.map((team) => team.points))
+  )
+
+  return (
+    <Seed mobileBreakpoint={breakpoint}>
+      <SeedItem>
+        <div>
+          {seed.teams.map((team, i) => (
+            <SeedTeam
+              className='justify-content-between'
+              style={{
+                backgroundColor:
+                  seed.isFinished == 'TRUE' && team == winner
+                    ? 'green'
+                    : 'black',
+              }}
+            >
+              <p>{team.name || '\xa0'}</p>
+              <p>{team.points || '\xa0'}</p>
+            </SeedTeam>
+          ))}
+        </div>
+      </SeedItem>
+    </Seed>
+  )
+}
 
 export default function BracketPage(props: {
-  teams: string[][]
-  games: string[][]
+  winnersBracket: string[][]
+  losersBracket: string[][]
+  otherGames: string[][]
+  teamCount: number
 }) {
   const { user, isLoading, notify } = useAppContext()
   const router = useRouter()
-
-  const pow2ceil = (v: number) => {
-    var p = 2
-    while ((v >>= 1)) {
-      p <<= 1
-    }
-    return p
-  }
-
-  const buildBracket = () => {
-    // for n teams, there are n-1 games. * 2 for double elimination
-    // ceil to power of 2 to make perfect bracket, and then subtract 1
-    const gameCount = pow2ceil((props.teams.length - 1) * 2) - 1
-    var myBorderColor = '#0F0'
-    const numberOfLevels = 1 + Math.floor(Math.log2(gameCount))
-    var toColor = numberOfLevels - 1
-
-    console.log({ toColor })
-    const gameComponents = []
-    // creating all game components, games not
-    // decided yet should have dashes "-" in the sheet
-    for (var i = 0; i < gameCount; i++) {
-      const game = props.games[i]
-      gameComponents.push(
-        <Fragment key={`filled-${game[0]}${game[1]}`}>
-          <li className='spacer'>&nbsp;</li>
-
-          <li
-            style={{ borderColor: myBorderColor }}
-            className={`game game-top ${
-              game[4] == 'Yes' && +game[2] > +game[3] && 'winner'
-            }`}
-          >
-            {game[0] || '\xA0'} <span>{game[2] || '\xA0'}</span>
-          </li>
-
-          <li
-            style={{ borderColor: myBorderColor }}
-            className='game game-spacer'
-          >
-            {game[5] || '\xA0'}
-          </li>
-
-          <li
-            style={{ borderColor: myBorderColor }}
-            className={`game game-bottom ${
-              game[4] == 'Yes' && +game[3] > +game[2] && 'winner'
-            }`}
-          >
-            {game[1] || '\xA0'} <span>{game[3] || '\xA0'}</span>
-          </li>
-        </Fragment>
-      )
-
-      if ((i + 1) % toColor == 0) {
-        myBorderColor = myBorderColor == '#0F0' ? '#F00' : '#0F0'
-      }
-      if ((i + 1) % (toColor * 2) == 0) {
-        toColor /= 2
-      }
-    }
-
-    var addGames = 1
-    const roundComponents = []
-    // the bracket requires knowledge of how many levels the binary
-    // tree will have, this creates and adds games to "rounds"
-    // bracket is built "backwards," it starts by creating the last
-    // round and adding the last game
-    for (var i = numberOfLevels; i > 0; i--) {
-      if (gameComponents.length < addGames) {
-        break
-      }
-
-      roundComponents.push(
-        <ul
-          key={i}
-          className={`round round-${i}`}
-          children={gameComponents.slice(-addGames).concat([
-            <li key={`final-spacer-${i}`} className='spacer'>
-              &nbsp;
-            </li>,
-          ])}
-        />
-      )
-
-      // popping out the game components set as children
-      // to the round created above
-      for (var j = 0; j < addGames; j++) {
-        gameComponents.pop()
-      }
-
-      // a round is created every iteration
-      // rounds are created last to first, so
-      // numbers of games per round increase as we go
-      addGames *= 2
-    }
-
-    return roundComponents
-  }
 
   if (isLoading) {
     return <Spin />
@@ -126,65 +145,68 @@ export default function BracketPage(props: {
 
   return (
     <>
-      <Navbar />
+      <h1>Welcome {user.email}</h1>
 
-      <Typography.Title>Welcome {user.email}</Typography.Title>
+      <div style={{ overflowX: 'auto' }}>
+        <Space>
+          <div>
+            <h1>Winners Bracket</h1>
+            <Bracket
+              mobileBreakpoint={0}
+              roundTitleComponent={CustomRoundTitle}
+              renderSeedComponent={CustomSeed}
+              rounds={getRounds(props.winnersBracket, props.teamCount)}
+            />
+          </div>
 
-      <Typography.Title>Live Bracket</Typography.Title>
+          <div>
+            <h1 className='text-end'>Losers Bracket</h1>
+            <Bracket
+              mobileBreakpoint={0}
+              rtl={true}
+              roundTitleComponent={CustomRoundTitle}
+              renderSeedComponent={CustomSeed}
+              rounds={getRounds(props.losersBracket, props.teamCount)}
+            />
+          </div>
+        </Space>
+      </div>
 
-      <div className='bracket'>{buildBracket().reverse()}</div>
-
-      <Typography.Title>Other Games</Typography.Title>
+      <h1>Other Games</h1>
 
       <Space>
-        <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
-          <Typography.Title>
-            {props.games[props.games.length - 3][5]}
-          </Typography.Title>
-          <Typography.Text>
-            {props.games[props.games.length - 3][0]} (
-            {props.games[props.games.length - 3][2]}) vs.{' '}
-            {props.games[props.games.length - 3][1]} (
-            {props.games[props.games.length - 3][3]})
-          </Typography.Text>
-        </Space>
+        {props.otherGames.map((game) => {
+          if (!game[DESCRIPTION]) {
+            return
+          }
 
-        <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
-          <Typography.Title>
-            {props.games[props.games.length - 2][5]}
-          </Typography.Title>
-          <Typography.Text>
-            {props.games[props.games.length - 2][0]} (
-            {props.games[props.games.length - 2][2]}) vs.{' '}
-            {props.games[props.games.length - 2][1]} (
-            {props.games[props.games.length - 2][3]})
-          </Typography.Text>
-        </Space>
-
-        <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
-          <Typography.Title>
-            {props.games[props.games.length - 1][5]}
-          </Typography.Title>
-          <Typography.Text>
-            {props.games[props.games.length - 1][0]} (
-            {props.games[props.games.length - 1][2]}) vs.{' '}
-            {props.games[props.games.length - 1][1]} (
-            {props.games[props.games.length - 1][3]})
-          </Typography.Text>
-        </Space>
+          return (
+            <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
+              <h1>{game[DESCRIPTION]}</h1>
+              <p>
+                {game[TEAM_1_NAME]} ({game[TEAM_2_NAME]}) vs.{' '}
+                {game[TEAM_1_SCORE]} ({game[TEAM_2_SCORE]})
+              </p>
+            </Space>
+          )
+        })}
       </Space>
     </>
   )
 }
 
 export async function getServerSideProps() {
-  const teams = await getTeamList()
-  const games = await getGameList()
+  const teams = await getSheetData('Teams')
+  const winnersBracket = await getSheetData("Winners' Bracket")
+  const losersBracket = await getSheetData("Losers' Bracket")
+  const otherGames = await getSheetData('Other Games')
 
   return {
     props: {
-      teams,
-      games,
+      winnersBracket,
+      losersBracket,
+      otherGames,
+      teamCount: teams.length,
     },
   }
 }
