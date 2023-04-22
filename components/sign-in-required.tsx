@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Typography, Button } from 'antd'
+import { Button } from 'antd'
 import styled from 'styled-components'
 import { useState } from 'react'
 import Head from 'next/head'
@@ -8,12 +8,12 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: calc(100vh - 180px);
+  height: 100vh;
   align-items: center;
   text-align: center;
 `
 
-export default function SignInRequired() {
+export default function SignInRequired(props: { message: string }) {
   const [isSignInButtonLoading, setIsSignInButtonLoading] = useState(false)
 
   return (
@@ -23,9 +23,9 @@ export default function SignInRequired() {
       </Head>
 
       <Container>
-        <Typography.Title>Sign in before viewing the bracket</Typography.Title>
+        <h1>{props.message}</h1>
 
-        <Link href='/' passHref>
+        <Link href='/'>
           <Button
             type='primary'
             loading={isSignInButtonLoading}

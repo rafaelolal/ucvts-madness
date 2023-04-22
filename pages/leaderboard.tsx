@@ -1,8 +1,5 @@
 import axios from 'axios'
-import { Card, Input, Button, Form, Space, Table, Typography } from 'antd'
-import Link from 'next/link'
-import { useState } from 'react'
-import Navbar from '@/components/navbar'
+import { Table } from 'antd'
 
 const getDataSource = (data: { name: string; points: number }[]) => {
   data.sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
@@ -41,7 +38,7 @@ const columns = [
     dataIndex: 'name',
     key: 'name',
     render: (_: any, record: { names: string[]; points: number }) =>
-      record.names.map((name) => <Typography.Text>{name}</Typography.Text>),
+      record.names.map((name) => <p>{name}</p>),
   },
   {
     title: 'Points',
@@ -53,9 +50,6 @@ const columns = [
 export default function LeaderboardPage(props: {
   data: { name: string; points: number }[]
 }) {
-  const [isLiveBracketButtonLoading, setIsLiveBracketButtonLoading] =
-    useState(false)
-
   return (
     <>
       <h1>Leaderboard</h1>

@@ -1,18 +1,15 @@
-import Navbar from '@/components/navbar'
 import { useAppContext } from '@/context/state'
 import { getSheetData } from '@/sheets'
-import { Button, Form, Modal, Select, Space, Spin, Typography } from 'antd'
+import { Button, Form, Modal, Select, Space } from 'antd'
 import axios from 'axios'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { isLabeledStatement } from 'typescript'
-import useSWR from 'swr'
 import Timer from '@/components/timer'
-import { GameType, TeamType } from '@/types'
+import { TeamType } from '@/types'
+import SignInRequired from '@/components/sign-in-required'
+import Loading from '@/components/loading'
 
 export default function BetsPage(props: { teams: TeamType[] }) {
   const { user, isLoading, notify } = useAppContext()
-  const router = useRouter()
 
   const [canMakeBets, setCanMakeBets] = useState(true)
   const [betData, setBetData] = useState<string | null | undefined>(undefined)
@@ -28,7 +25,7 @@ export default function BetsPage(props: { teams: TeamType[] }) {
 
     axios
       .get(`http://127.0.0.1:8000/api/user/${user.uid}/bet/`)
-      .then((response) => setBetData(response.data))
+      .then((response) => setBetData(response.data.order))
       .catch((error) => {
         if (error.response.status == 404) {
           setBetData(null)
@@ -76,33 +73,17 @@ export default function BetsPage(props: { teams: TeamType[] }) {
     }
   }
 
-  const ordinalOf = (i: number) => {
-    var j = i % 10,
-      k = i % 100
-    if (j == 1 && k != 11) {
-      return i + 'st'
-    }
-    if (j == 2 && k != 12) {
-      return i + 'nd'
-    }
-    if (j == 3 && k != 13) {
-      return i + 'rd'
-    }
-    return i + 'th'
-  }
-
-  if (isLoading || betData === undefined) {
-    return <Spin />
+  if (isLoading) {
+    return <Loading />
   }
 
   if (!user) {
-    router.replace('/')
-    return <Spin />
+    return <SignInRequired message={'Sign in to place bets and win prizes!'} />
   }
 
   return (
     <>
-      <h1>Your Bets</h1>
+      <h1>Bets for Winners' Bracket Only</h1>
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 
@@ -114,16 +95,24 @@ export default function BetsPage(props: { teams: TeamType[] }) {
         ))}
 
       <Button
-        disabled={!canMakeBets || betData}
+        disabled={!canMakeBets || Boolean(betData)}
         type='primary'
         onClick={() => setIsModalOpen(true)}
       >
-        Make Bets
+        Place Bets
       </Button>
+
+      <p>Your bets</p>
+      {betData &&
+        betData.split('*').map((bet, i) => (
+          <p>
+            Winner of Game {i + 1}: {bet}
+          </p>
+        ))}
 
       <Modal
         centered
-        title='Your Bets'
+        title="Bets for Winners' Bracket Only"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={[
@@ -155,18 +144,20 @@ export default function BetsPage(props: { teams: TeamType[] }) {
               rules={[
                 {
                   required: true,
-                  message: `Please select the team you bet will be ${ordinalOf(
+                  message: `Select winner of the winners' bracket Game ${
                     i + 1
-                  )}!`,
+                  }!`,
                 },
               ]}
               name={`place${i}`}
-              label={`${ordinalOf(i + 1)} Place`}
+              label={`Winner of Game ${i + 1}`}
             >
               <Select>
-                {props.teams.map((team) => (
-                  <Select.Option value={team.name}>{team.name}</Select.Option>
-                ))}
+                {[{ name: 'N/A', players: [''] }]
+                  .concat(props.teams)
+                  .map((team) => (
+                    <Select.Option value={team.name}>{team.name}</Select.Option>
+                  ))}
               </Select>
             </Form.Item>
           ))}

@@ -1,3 +1,4 @@
+import { useAppContext } from '@/context/state'
 import { auth } from '@/firebaseConfig'
 import { Button, Space } from 'antd'
 import Link from 'next/link'
@@ -5,6 +6,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 
 export default function Navbar() {
+  const { user, isLoading } = useAppContext()
   const router = useRouter()
   const [isBracketButtonLoading, setIsBracketButtonLoading] = useState(false)
   const [isBetsButtonLoading, setIsBetsButtonLoading] = useState(false)
@@ -58,15 +60,27 @@ export default function Navbar() {
         </Button>
       </Link>
 
-      <Button
-        type='primary'
-        htmlType='submit'
-        onClick={() => {
-          auth.signOut().then(() => router.replace('/'))
-        }}
-      >
-        Sign Out
-      </Button>
+      {isLoading ? (
+        <Button type='primary' loading={true} disabled={true} />
+      ) : user ? (
+        <Button
+          type='primary'
+          onClick={() => {
+            auth.signOut().then(() => router.replace('/'))
+          }}
+        >
+          Sign Out
+        </Button>
+      ) : (
+        <Button
+          type='primary'
+          onClick={() => {
+            router.push('/')
+          }}
+        >
+          Sign In
+        </Button>
+      )}
     </Space>
   )
 }

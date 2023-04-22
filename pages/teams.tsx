@@ -1,19 +1,6 @@
-import { Card, Input, Button, Form, Space, Table, Typography } from 'antd'
-import Link from 'next/link'
-import { useState } from 'react'
-import { getGameList, getTeamList } from '@/sheets'
-import Navbar from '@/components/navbar'
-
-const getDataSource = (teams: string[][]) => {
-  teams.sort((a, b) => a[0].localeCompare(b[0]))
-
-  const dataSource: { name: string; players: string }[] = []
-  for (var team of teams) {
-    dataSource.push({ name: team[0], players: team.slice(1).join(', ') })
-  }
-
-  return dataSource
-}
+import { Table } from 'antd'
+import { getSheetData } from '@/sheets'
+import { TeamType } from '@/types'
 
 const columns = [
   {
@@ -25,27 +12,23 @@ const columns = [
     title: 'Players',
     dataIndex: 'players',
     key: 'players',
+    render: (_: any, record: TeamType) =>
+      record.players.map((name) => <p>{name}</p>),
   },
 ]
 
-export default function TeamsPage(props: { teams: string[][] }) {
+export default function TeamsPage(props: { teams: TeamType[] }) {
   return (
     <>
       <h1>Teams</h1>
 
-      <Table
-        pagination={{
-          defaultPageSize: 10,
-        }}
-        dataSource={getDataSource(props.teams)}
-        columns={columns}
-      />
+      <Table pagination={false} dataSource={props.teams} columns={columns} />
     </>
   )
 }
 
 export async function getServerSideProps() {
-  const teams = await getTeamList()
+  const teams = await getSheetData('Teams')
 
   return {
     props: {

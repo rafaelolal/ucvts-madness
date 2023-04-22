@@ -1,8 +1,7 @@
-import Head from 'next/head'
 import axios from 'axios'
 import { Agent } from 'https'
 import { useState } from 'react'
-import { Card, Input, Button, Form, Space, Typography, Spin } from 'antd'
+import { Card, Input, Button, Form, Space } from 'antd'
 import { MailOutlined } from '@ant-design/icons'
 import { useAppContext } from '@/context/state'
 import { useRouter } from 'next/router'
@@ -14,6 +13,7 @@ import {
   User,
 } from 'firebase/auth'
 import { auth } from '../firebaseConfig'
+import Loading from '@/components/loading'
 
 const httpsAgent = new Agent({
   rejectUnauthorized: false,
@@ -84,75 +84,80 @@ export default function IndexPage() {
   }
 
   const onFinishFailed = (errorInfo: any) => {
+    setIsSubmitting(false)
     throw errorInfo
   }
 
   if (isLoading) {
-    return (
-      <Container>
-        <Spin />
-      </Container>
-    )
+    return <Loading />
   }
 
   if (user !== null) {
     router.replace('/bracket')
-    return (
-      <Container>
-        <Spin />
-      </Container>
-    )
+    return <Loading />
   }
 
   return (
     <>
-      <Head>
-        <title>UCVTS MADNESS</title>
-      </Head>
-
       <Container>
-        <Card title={isSigningUp ? 'Signing Up' : 'Signing In'}>
-          <Typography.Text>
-            Welcome to the UCVTS-Madness website
-          </Typography.Text>
-
-          <Form onFinish={onFinish} onFinishFailed={onFinishFailed}>
-            <Form.Item
-              name='email'
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your school issued email!',
-                },
-              ]}
+        <Space direction='vertical' style={{ alignItems: 'center' }}>
+          <Space>
+            <Button
+              type='primary'
+              disabled={isSigningUp}
+              onClick={() => setIsSigningUp(!isSigningUp)}
             >
-              <Input prefix={<MailOutlined />} placeholder='@ucvts.org' />
-            </Form.Item>
+              Sign Up
+            </Button>
 
-            <Form.Item
-              name='password'
-              rules={[
-                { required: true, message: 'Please input your password!' },
-              ]}
+            <Button
+              type='primary'
+              disabled={!isSigningUp}
+              onClick={() => setIsSigningUp(!isSigningUp)}
             >
-              <Input.Password placeholder='Password' />
-            </Form.Item>
+              Sign In
+            </Button>
+          </Space>
 
-            {isSigningUp && (
+          <Card title={isSigningUp ? 'Signing Up' : 'Signing In'}>
+            <p>Welcome to the UCVTS-Madness website!</p>
+
+            <Form onFinish={onFinish} onFinishFailed={onFinishFailed}>
               <Form.Item
-                name='confirmPassword'
+                name='email'
                 rules={[
                   {
                     required: true,
-                    message: 'Please input your password again!',
+                    message: 'Please input your school issued email!',
                   },
                 ]}
               >
-                <Input.Password placeholder='Confirm password' />
+                <Input prefix={<MailOutlined />} placeholder='@ucvts.org' />
               </Form.Item>
-            )}
 
-            <Space>
+              <Form.Item
+                name='password'
+                rules={[
+                  { required: true, message: 'Please input your password!' },
+                ]}
+              >
+                <Input.Password placeholder='Password' />
+              </Form.Item>
+
+              {isSigningUp && (
+                <Form.Item
+                  name='confirmPassword'
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please confirm your password!',
+                    },
+                  ]}
+                >
+                  <Input.Password placeholder='Confirm password' />
+                </Form.Item>
+              )}
+
               <Form.Item>
                 <Button
                   type='primary'
@@ -163,18 +168,9 @@ export default function IndexPage() {
                   Submit
                 </Button>
               </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type='primary'
-                  onClick={() => setIsSigningUp(!isSigningUp)}
-                >
-                  {isSigningUp ? 'Sign In Instead' : 'Sign Up Instead'}
-                </Button>
-              </Form.Item>
-            </Space>
-          </Form>
-        </Card>
+            </Form>
+          </Card>
+        </Space>
       </Container>
     </>
   )

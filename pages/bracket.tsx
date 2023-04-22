@@ -1,13 +1,10 @@
+import Loading from '@/components/loading'
 import { useAppContext } from '@/context/state'
 import { getSheetData } from '@/sheets'
 import { GameType } from '@/types'
-import { Card, Input, Button, Form, Space, Table, Typography, Spin } from 'antd'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { Fragment, useEffect, useState } from 'react'
+import { Space } from 'antd'
 import {
   Bracket,
-  IRoundProps,
   Seed,
   SeedItem,
   SeedTeam,
@@ -124,21 +121,15 @@ export default function BracketPage(props: {
   otherGames: GameType[]
   teamCount: number
 }) {
-  const { user, isLoading, notify } = useAppContext()
-  const router = useRouter()
+  const { user, isLoading } = useAppContext()
 
   if (isLoading) {
-    return <Spin />
-  }
-
-  if (!user) {
-    router.replace('/')
-    return <Spin />
+    return <Loading />
   }
 
   return (
     <>
-      <h1>Welcome {user.email}</h1>
+      {user && <h1>Welcome {user.email}</h1>}
 
       <div style={{ overflowX: 'auto' }}>
         <Space>
@@ -199,7 +190,7 @@ export async function getServerSideProps() {
       winnersBracket,
       losersBracket,
       otherGames,
-      teamCount: teams.length,
+      teamCount: teams!.length,
     },
   }
 }
