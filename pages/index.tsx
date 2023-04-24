@@ -158,7 +158,9 @@ export default function IndexPage() {
                 </Form.Item>
               )}
 
-              <Form.Item>
+              <Form.Item
+                style={{ display: 'flex', justifyContent: 'flex-end' }}
+              >
                 <Button
                   type='primary'
                   htmlType='submit'

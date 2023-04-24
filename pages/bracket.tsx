@@ -117,7 +117,6 @@ const CustomSeed = ({
 
 export default function BracketPage(props: {
   winnersBracket: GameType[]
-  losersBracket: GameType[]
   otherGames: GameType[]
   teamCount: number
 }) {
@@ -140,17 +139,6 @@ export default function BracketPage(props: {
               roundTitleComponent={CustomRoundTitle}
               renderSeedComponent={CustomSeed}
               rounds={getRounds(props.winnersBracket, props.teamCount)}
-            />
-          </div>
-
-          <div>
-            <h1 className='text-end'>Losers Bracket</h1>
-            <Bracket
-              mobileBreakpoint={0}
-              rtl={true}
-              roundTitleComponent={CustomRoundTitle}
-              renderSeedComponent={CustomSeed}
-              rounds={getRounds(props.losersBracket, props.teamCount)}
             />
           </div>
         </Space>
@@ -182,13 +170,11 @@ export default function BracketPage(props: {
 export async function getServerSideProps() {
   const teams = await getSheetData('Teams')
   const winnersBracket = await getSheetData("Winners' Bracket")
-  const losersBracket = await getSheetData("Losers' Bracket")
   const otherGames = await getSheetData('Other Games')
 
   return {
     props: {
       winnersBracket,
-      losersBracket,
       otherGames,
       teamCount: teams!.length,
     },
