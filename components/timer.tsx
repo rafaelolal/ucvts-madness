@@ -1,4 +1,3 @@
-import { Typography } from 'antd'
 import { useEffect, useState } from 'react'
 
 export default function Timer(props: {
@@ -44,13 +43,10 @@ export default function Timer(props: {
   return (
     <>
       {props.canMakeBets ? (
-        <>
-          <Typography.Title>Time Until Tournament</Typography.Title>
-          <Typography.Text>
-            {tournamentDatetime.days} days and {tournamentDatetime.hours}:
-            {tournamentDatetime.minutes}:{tournamentDatetime.seconds}
-          </Typography.Text>
-        </>
+        <p>
+          {tournamentDatetime.days} days and {tournamentDatetime.hours}:
+          {tournamentDatetime.minutes}:{tournamentDatetime.seconds}
+        </p>
       ) : (
         <p>No more bets, tournament started!</p>
       )}
