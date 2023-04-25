@@ -23,7 +23,7 @@ export default function SignInRequired(props: { message: string }) {
       </Head>
 
       <Container>
-        <h1>{props.message}</h1>
+        <h1 className='text-center mx-5 mb-4'>{props.message}</h1>
 
         <Link href='/'>
           <Button

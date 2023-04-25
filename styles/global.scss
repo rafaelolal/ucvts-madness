@@ -1,1 +1,157 @@
+@import './colors.scss';
 @import './node_modules/bootstrap/scss/bootstrap.scss';
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400&display=swap');
+/*
+ * Bracket
+*/
+
+/*
+ *  Flex Layout Specifics
+*/
+@font-face {
+  font-family: galactic;
+  src: url(/ucvts-madness/octin-college-free.rg-regular.otf);
+  font-weight: semibold;
+}
+
+.basketball {
+  font-family: basketball;
+}
+.bracket {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 200px;
+  list-style: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.round .spacer {
+  flex-grow: 1;
+}
+
+.round .spacer:first-child,
+.round .spacer:last-child {
+  flex-grow: 0.5;
+}
+
+.round .game-spacer {
+  flex-grow: 1;
+}
+
+/*
+ *  General Styles
+*/
+li.game {
+  padding-left: 20px;
+}
+
+li.game.winner {
+  font-weight: bold;
+}
+li.game span {
+  float: right;
+  margin-right: 5px;
+}
+
+li.game-top {
+  border-bottom: 1px solid #aaa;
+}
+
+li.game-spacer {
+  border-right: 1px solid #aaa;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+li.game-bottom {
+  border-top: 1px solid #aaa;
+}
+
+.colon {
+  padding: 0;
+  width: fit-content;
+  vertical-align: middle;
+  margin: auto 0;
+}
+
+.fs-huge {
+  font-size: 2.5rem;
+}
+
+.fs-tiny {
+  font-size: 0.7rem;
+}
+
+.monospace {
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* .btnOrange.ant-btn {
+  padding: 0.2rem 0.5rem;
+  height: auto;
+  font-weight: 600;
+  background-color: $primary;
+}
+
+.btnOrange.ant-btn:hover {
+  background-color: white;
+  color: $primary;
+  border: 1px solid $primary;
+}
+
+.btnBlue {
+  padding: 0.2rem 0.5rem;
+  height: auto;
+  font-weight: 600;
+  background-color: $secondary;
+  color: white;
+}
+
+.btnBlue:hover {
+  background-color: white;
+  color: $secondary;
+  border: 1px solid $secondary;
+}
+*/
+
+.btnOrange {
+  width: 100%;
+  .ant-btn {
+    width: 100%;
+    background-color: $primary;
+    color: $light;
+  }
+  .ant-btn:hover,
+  .ant-btn:focus,
+  .ant-btn:active {
+    border-color: $primary;
+    background-color: $light;
+    color: $light;
+  }
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.w-none {
+  width: initial;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-x: hidden;
+}

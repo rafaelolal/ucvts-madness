@@ -199,7 +199,7 @@ export default function BetsPage(props: {
 
   return (
     <>
-      <h1>Tournament Bets</h1>
+      <h1 className='fw-bold'>Bets for Winners' Bracket Only</h1>
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 

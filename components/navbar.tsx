@@ -15,72 +15,131 @@ export default function Navbar() {
   const [isTeamsButtonLoading, setIsTeamsButtonLoading] = useState(false)
 
   return (
-    <Space>
-      <Link href='/bracket'>
-        <Button
-          type='primary'
-          loading={isBracketButtonLoading}
-          disabled={router.pathname == '/bracket'}
-          onClick={() => setIsBracketButtonLoading(true)}
+    <nav className='navbar bg-body-tertiary shadow-sm'>
+      <div className='container-fluid'>
+        <a className='navbar-brand' href='#'>
+          UCVTS Madness
+        </a>
+        <button
+          className='navbar-toggler'
+          type='button'
+          data-bs-toggle='offcanvas'
+          data-bs-target='#offcanvasNavbar'
+          aria-controls='offcanvasNavbar'
+          aria-label='Toggle navigation'
         >
-          Live Bracket
-        </Button>
-      </Link>
+          <span className='navbar-toggler-icon'></span>
+        </button>
+        <div
+          className='offcanvas offcanvas-end'
+          id='offcanvasNavbar'
+          aria-labelledby='offcanvasNavbarLabel'
+          style={{ width: '70%' }}
+        >
+          <div className='offcanvas-header'>
+            <h5 className='offcanvas-title' id='offcanvasNavbarLabel'>
+              Navigation
+            </h5>
+            <button
+              type='button'
+              className='btn-close'
+              data-bs-dismiss='offcanvas'
+              aria-label='Close'
+            ></button>
+          </div>
+          <div className='offcanvas-body'>
+            <ul className='navbar-nav justify-content-end flex-grow-1 pe-3'>
+              <li className='nav-item w-100 px-3 py-2 '>
+                <Link href='/bracket'>
+                  <Button
+                    className='w-100 btnBlue shadow-sm'
+                    type='primary'
+                    loading={isBracketButtonLoading}
+                    disabled={router.pathname == '/bracket'}
+                    onClick={() => setIsBracketButtonLoading(true)}
+                  >
+                    Live Bracket
+                  </Button>
+                </Link>
+              </li>
 
-      <Link href='/bets'>
-        <Button
-          type='primary'
-          loading={isBetsButtonLoading}
-          disabled={router.pathname == '/bets'}
-          onClick={() => setIsBetsButtonLoading(true)}
-        >
-          Bets
-        </Button>
-      </Link>
+              <li className='nav-item w-100 px-3 py-2'>
+                <Link href='/bets'>
+                  <Button
+                    className='w-100 btnBlue shadow-sm'
+                    type='primary'
+                    loading={isBetsButtonLoading}
+                    disabled={router.pathname == '/bets'}
+                    onClick={() => setIsBetsButtonLoading(true)}
+                  >
+                    Bets
+                  </Button>
+                </Link>
+              </li>
 
-      <Link href='/leaderboard'>
-        <Button
-          type='primary'
-          loading={isLeaderboardButtonLoading}
-          disabled={router.pathname == '/leaderboard'}
-          onClick={() => setIsLeaderboardButtonLoading(true)}
-        >
-          Leaderboard
-        </Button>
-      </Link>
+              <li className='nav-item w-100 px-3 py-2'>
+                <Link href='/leaderboard'>
+                  <Button
+                    className='w-100 btnBlue shadow-sm'
+                    type='primary'
+                    loading={isLeaderboardButtonLoading}
+                    disabled={router.pathname == '/leaderboard'}
+                    onClick={() => setIsLeaderboardButtonLoading(true)}
+                  >
+                    Leaderboard
+                  </Button>
+                </Link>
+              </li>
 
-      <Link href='/teams'>
-        <Button
-          type='primary'
-          loading={isTeamsButtonLoading}
-          disabled={router.pathname == '/teams'}
-          onClick={() => setIsTeamsButtonLoading(true)}
-        >
-          Teams
-        </Button>
-      </Link>
-
-      {isLoading ? (
-        <Button type='primary' loading={true} disabled={true} />
-      ) : user ? (
-        <Button
-          type='primary'
-          onClick={() => {
-            auth.signOut()
-          }}
-        >
-          Sign Out
-        </Button>
-      ) : (
-        <Button
-          type='primary'
-          onClick={() => {
-            router.push('/')
-          }}
-        >
-          Sign In
-        </Button>
-      )}
-    </Space>
+              <li className='nav-item w-100 px-3 py-2'>
+                <Link href='/teams'>
+                  <Button
+                    className='w-100 btnBlue shadow-sm'
+                    type='primary'
+                    loading={isTeamsButtonLoading}
+                    disabled={router.pathname == '/teams'}
+                    onClick={() => setIsTeamsButtonLoading(true)}
+                  >
+                    Teams
+                  </Button>
+                </Link>
+              </li>
+              <li className='nav-item w-100 px-3 py-2'>
+                {isLoading ? (
+                  <div className='btnOrange'>
+                    <Button
+                      className='w-100'
+                      type='primary'
+                      loading={true}
+                      disabled={true}
+                    />
+                  </div>
+                ) : user ? (
+                  <Button
+                    className='w-100 btnOrange'
+                    type='primary'
+                    onClick={() => {
+                      auth.signOut()
+                    }}
+                  >
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Button
+                    className='w-100 btnOrange'
+                    type='primary'
+                    onClick={() => {
+                      router.push('/')
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                )}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
   )
 }

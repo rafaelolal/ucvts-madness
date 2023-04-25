@@ -19,8 +19,10 @@ export default function App({ Component, pageProps }: AppProps) {
         strategy='beforeInteractive'
       />
 
-      <Navbar />
-      <Component {...pageProps} />
+      <div className='container-fluid p-0 w-100'>
+        <Navbar />
+        <Component {...pageProps} />
+      </div>
     </AppWrapper>
   )
 }

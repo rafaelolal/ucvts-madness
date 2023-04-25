@@ -51,8 +51,8 @@ export default function LeaderboardPage(props: {
   data: { name: string; points: number }[]
 }) {
   return (
-    <>
-      <h1>Leaderboard</h1>
+    <div className='my-4'>
+      <h1 className='text-center'>Leaderboard</h1>
 
       <Table
         pagination={{
@@ -61,7 +61,7 @@ export default function LeaderboardPage(props: {
         dataSource={getDataSource(props.data)}
         columns={columns}
       />
-    </>
+    </div>
   )
 }
 

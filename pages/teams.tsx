@@ -20,7 +20,7 @@ const columns = [
 export default function TeamsPage(props: { teams: TeamType[] }) {
   return (
     <>
-      <h1>Teams</h1>
+      <h1 className='text-center my-4'>Teams</h1>
 
       <Table pagination={false} dataSource={props.teams} columns={columns} />
     </>

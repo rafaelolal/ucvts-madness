@@ -3,6 +3,8 @@ import { Agent } from 'https'
 import { useState } from 'react'
 import { Card, Input, Button, Form, Space } from 'antd'
 import { MailOutlined } from '@ant-design/icons'
+import { KeyOutlined } from '@ant-design/icons'
+import { RedoOutlined } from '@ant-design/icons'
 import { useAppContext } from '@/context/state'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
@@ -99,7 +101,17 @@ export default function IndexPage() {
 
   return (
     <>
-      <Container>
+      <Container className='flex-column'>
+        <h1
+          style={{
+            marginBottom: '20px',
+            fontSize: '1.2rem',
+            textAlign: 'center',
+            fontWeight: 'bold',
+          }}
+        >
+          Welcome
+        </h1>
         <Space direction='vertical' style={{ alignItems: 'center' }}>
           <Space>
             <Button
@@ -119,9 +131,11 @@ export default function IndexPage() {
             </Button>
           </Space>
 
-          <Card title={isSigningUp ? 'Signing Up' : 'Signing In'}>
-            <p>Welcome to the UCVTS-Madness website!</p>
-
+          <Card
+            className='rounded-4 mx-auto my-3'
+            style={{ boxShadow: '0px 4px 10px rgba(0,0,0,0.15)' }}
+            title={isSigningUp ? 'Signing Up' : 'Signing In'}
+          >
             <Form onFinish={onFinish} onFinishFailed={onFinishFailed}>
               <Form.Item
                 name='email'
@@ -132,7 +146,11 @@ export default function IndexPage() {
                   },
                 ]}
               >
-                <Input prefix={<MailOutlined />} placeholder='@ucvts.org' />
+                <Input
+                  className='rounded-4'
+                  prefix={<MailOutlined />}
+                  placeholder='  @ucvts.org'
+                />
               </Form.Item>
 
               <Form.Item
@@ -141,7 +159,11 @@ export default function IndexPage() {
                   { required: true, message: 'Please input your password!' },
                 ]}
               >
-                <Input.Password placeholder='Password' />
+                <Input.Password
+                  prefix={<KeyOutlined />}
+                  className='rounded-4'
+                  placeholder='  Password'
+                />
               </Form.Item>
 
               {isSigningUp && (
@@ -154,7 +176,11 @@ export default function IndexPage() {
                     },
                   ]}
                 >
-                  <Input.Password placeholder='Confirm password' />
+                  <Input.Password
+                    className='rounded-4'
+                    prefix={<RedoOutlined />}
+                    placeholder='  Confirm password'
+                  />
                 </Form.Item>
               )}
 
