@@ -1,5 +1,6 @@
 import Loading from '@/components/loading'
 import { useAppContext } from '@/context/state'
+import { pow2ceil } from '@/helpers'
 import { getSheetData } from '@/sheets'
 import { GameType } from '@/types'
 import { Space } from 'antd'
@@ -11,12 +12,46 @@ import {
   IRenderSeedProps,
 } from 'react-brackets'
 
-const pow2ceil = (v: number) => {
-  var p = 2
-  while ((v >>= 1)) {
-    p <<= 1
-  }
-  return p
+const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
+  return <h3 style={{ textAlign: 'center' }}>{title}</h3>
+}
+
+const CustomSeed = ({
+  seed,
+  breakpoint,
+  roundIndex,
+  seedIndex,
+}: IRenderSeedProps) => {
+  const winner = seed.teams.find(
+    (team) => team.points == Math.max(...seed.teams.map((team) => team.points))
+  )
+
+  return (
+    <Seed mobileBreakpoint={breakpoint}>
+      <SeedItem>
+        <div>
+          {seed.teams.map((team, i) => (
+            <SeedTeam
+              className='justify-content-between'
+              style={{
+                backgroundColor:
+                  seed.isFinished && team == winner ? 'green' : 'black',
+              }}
+            >
+              <p>{team.name || '\xa0'}</p>
+              <p>{team.points || '\xa0'}</p>
+            </SeedTeam>
+          ))}
+        </div>
+      </SeedItem>
+
+      <div>
+        <p style={{ margin: 0, padding: 0, color: '#aaa' }}>
+          {seed.description}
+        </p>
+      </div>
+    </Seed>
+  )
 }
 
 const getRounds = (games: GameType[], teamCount: number) => {
@@ -73,48 +108,6 @@ const getRounds = (games: GameType[], teamCount: number) => {
   return rounds.reverse()
 }
 
-const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
-  return <h3 style={{ textAlign: 'center' }}>{title}</h3>
-}
-
-const CustomSeed = ({
-  seed,
-  breakpoint,
-  roundIndex,
-  seedIndex,
-}: IRenderSeedProps) => {
-  const winner = seed.teams.find(
-    (team) => team.points == Math.max(...seed.teams.map((team) => team.points))
-  )
-
-  return (
-    <Seed mobileBreakpoint={breakpoint}>
-      <SeedItem>
-        <div>
-          {seed.teams.map((team, i) => (
-            <SeedTeam
-              className='justify-content-between'
-              style={{
-                backgroundColor:
-                  seed.isFinished && team == winner ? 'green' : 'black',
-              }}
-            >
-              <p>{team.name || '\xa0'}</p>
-              <p>{team.points || '\xa0'}</p>
-            </SeedTeam>
-          ))}
-        </div>
-      </SeedItem>
-
-      <div>
-        <p style={{ margin: 0, padding: 0, color: '#aaa' }}>
-          {seed.description}
-        </p>
-      </div>
-    </Seed>
-  )
-}
-
 export default function BracketPage(props: {
   winnersBracket: GameType[]
   otherGames: GameType[]
@@ -131,17 +124,13 @@ export default function BracketPage(props: {
       {user && <h1>Welcome {user.email}</h1>}
 
       <div style={{ overflowX: 'auto' }}>
-        <Space>
-          <div>
-            <h1>Live Bracket</h1>
-            <Bracket
-              mobileBreakpoint={0}
-              roundTitleComponent={CustomRoundTitle}
-              renderSeedComponent={CustomSeed}
-              rounds={getRounds(props.winnersBracket, props.teamCount)}
-            />
-          </div>
-        </Space>
+        <h1>Live Bracket</h1>
+        <Bracket
+          mobileBreakpoint={0}
+          roundTitleComponent={CustomRoundTitle}
+          renderSeedComponent={CustomSeed}
+          rounds={getRounds(props.winnersBracket, props.teamCount)}
+        />
       </div>
 
       <h1>Other Games</h1>

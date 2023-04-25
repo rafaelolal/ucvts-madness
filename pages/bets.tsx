@@ -1,19 +1,127 @@
 import { useAppContext } from '@/context/state'
 import { getSheetData } from '@/sheets'
-import { Button, Form, Modal, Select, Space } from 'antd'
+import { Button, Form, Select, Typography } from 'antd'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import Timer from '@/components/timer'
 import { TeamType } from '@/types'
 import SignInRequired from '@/components/sign-in-required'
 import Loading from '@/components/loading'
+import {
+  Bracket,
+  Seed,
+  SeedItem,
+  SeedTeam,
+  IRenderSeedProps,
+} from 'react-brackets'
+import { pow2ceil } from '@/helpers'
 
-export default function BetsPage(props: { teams: TeamType[] }) {
+const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
+  return <h3 style={{ textAlign: 'center' }}>{title}</h3>
+}
+
+const CustomSeed = ({
+  seed,
+  breakpoint,
+  roundIndex,
+  seedIndex,
+}: IRenderSeedProps) => {
+  console.log({ bet: seed.bet })
+  return (
+    <Seed mobileBreakpoint={breakpoint}>
+      <SeedItem>
+        <SeedTeam>
+          <Form.Item
+            help={
+              <Typography.Text style={{ color: 'white' }}>{`Winner of Game ${
+                (seed.id as number) + 1
+              }`}</Typography.Text>
+            }
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+            name={`bet${seed.id}`}
+          >
+            <Select
+              disabled={seed.bet}
+              style={{
+                width: '183px',
+                backgroundColor: 'white',
+                borderRadius: '7px',
+              }}
+            >
+              {[{ name: 'N/A', players: [''] }]
+                .concat(seed.allTeamNames)
+                .map((team) => (
+                  <Select.Option value={team.name}>{team.name}</Select.Option>
+                ))}
+            </Select>
+          </Form.Item>
+        </SeedTeam>
+      </SeedItem>
+    </Seed>
+  )
+}
+
+const getRounds = (
+  teamCount: number,
+  teams: TeamType[],
+  bets: string | null | undefined
+) => {
+  const gameCount = pow2ceil(teamCount - 1) - 1
+  const roundCount = Math.floor(Math.log2(gameCount)) + 1
+
+  var formattedBets
+  if (bets) {
+    formattedBets = bets.split('*')
+  }
+
+  const seeds = []
+  for (var i = 0; i < gameCount; i++) {
+    var bet = null
+    if (formattedBets) {
+      bet = formattedBets[i]
+    }
+    seeds.push({
+      id: i,
+      bet: bet,
+      allTeamNames: teams,
+      teams: [],
+    })
+  }
+
+  const rounds = []
+  var addGames = 1
+  for (var i = roundCount; i > 0; i--) {
+    if (seeds.length < addGames) {
+      break
+    }
+
+    rounds.push({
+      title: `Round ${i}`,
+      seeds: seeds.slice(-addGames),
+    })
+
+    for (var j = 0; j < addGames; j++) {
+      seeds.pop()
+    }
+
+    addGames *= 2
+  }
+
+  return rounds.reverse()
+}
+
+export default function BetsPage(props: {
+  studentTeams: TeamType[]
+  teacherTeams: TeamType[]
+}) {
   const { user, isLoading, notify } = useAppContext()
 
   const [canMakeBets, setCanMakeBets] = useState(true)
   const [betData, setBetData] = useState<string | null | undefined>(undefined)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isBetsSubmitButtonLoading, setIsBetsSubmitButtonLoading] =
     useState(false)
   const [form] = Form.useForm()
@@ -25,8 +133,17 @@ export default function BetsPage(props: { teams: TeamType[] }) {
 
     axios
       .get(`http://127.0.0.1:8000/api/user/${user.uid}/bet/`)
-      .then((response) => setBetData(response.data.order))
+      .then((response) => {
+        var initialValues: any = {} // fix datatype, I don't know how though
+        const formattedBets = response.data.order.split('*')
+        for (var i = 0; i < formattedBets.length; i++) {
+          initialValues[`bet${i}`] = formattedBets[i]
+        }
+        form.setFieldsValue(initialValues)
+        setBetData(response.data.order)
+      })
       .catch((error) => {
+        console.log({ error })
         if (error.response.status == 404) {
           setBetData(null)
           return
@@ -57,7 +174,6 @@ export default function BetsPage(props: { teams: TeamType[] }) {
           })
           setBetData(Object.values(values).join('*'))
           setIsBetsSubmitButtonLoading(false)
-          setIsModalOpen(false)
         })
         .catch((error) => {
           notify.error({
@@ -83,98 +199,50 @@ export default function BetsPage(props: { teams: TeamType[] }) {
 
   return (
     <>
-      <h1>Bets for Winners' Bracket Only</h1>
+      <h1>Tournament Bets</h1>
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 
-      {canMakeBets &&
-        (betData ? (
-          <p>You have already placed a bet!</p>
-        ) : (
-          <p>Place your first bet!</p>
-        ))}
+      <h3>Your Bets</h3>
 
-      <Button
-        disabled={!canMakeBets || Boolean(betData)}
-        type='primary'
-        onClick={() => setIsModalOpen(true)}
-      >
-        Place Bets
-      </Button>
-
-      <p>Your bets</p>
-      {betData &&
-        betData.split('*').map((bet, i) => (
-          <p>
-            Winner of Game {i + 1}: {bet}
-          </p>
-        ))}
-
-      <Modal
-        centered
-        title="Bets for Winners' Bracket Only"
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={[
-          <Space key='footer'>
-            <Button
-              onClick={() => {
-                setIsModalOpen(false)
-              }}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type='primary'
-              loading={isBetsSubmitButtonLoading}
-              onClick={() => {
-                setIsBetsSubmitButtonLoading(true)
-                onFinish()
-              }}
-            >
-              Submit
-            </Button>
-          </Space>,
-        ]}
-      >
+      <div style={{ overflowX: 'auto' }}>
         <Form form={form}>
-          {[...Array(props.teams.length)].map((e, i) => (
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Select winner of the winners' bracket Game ${
-                    i + 1
-                  }!`,
-                },
-              ]}
-              name={`place${i}`}
-              label={`Winner of Game ${i + 1}`}
-            >
-              <Select>
-                {[{ name: 'N/A', players: [''] }]
-                  .concat(props.teams)
-                  .map((team) => (
-                    <Select.Option value={team.name}>{team.name}</Select.Option>
-                  ))}
-              </Select>
-            </Form.Item>
-          ))}
+          <Bracket
+            mobileBreakpoint={0}
+            roundTitleComponent={CustomRoundTitle}
+            renderSeedComponent={CustomSeed}
+            rounds={getRounds(
+              props.studentTeams.length,
+              props.studentTeams.concat(props.teacherTeams),
+              betData
+            )}
+          />
         </Form>
-      </Modal>
+      </div>
+
+      {canMakeBets && !betData && (
+        <Button
+          type='primary'
+          loading={isBetsSubmitButtonLoading}
+          onClick={() => {
+            setIsBetsSubmitButtonLoading(true)
+            onFinish()
+          }}
+        >
+          Place Bets
+        </Button>
+      )}
     </>
   )
 }
 
 export async function getServerSideProps() {
-  const teams = ((await getSheetData('Student Teams')) as TeamType[])?.concat(
-    (await getSheetData('Teacher Teams')) as TeamType[]
-  )
-
+  const studentTeams = await getSheetData('Student Teams')
+  const teacherTeams = await getSheetData('Teacher Teams')
   return {
     props: {
-      teams,
+      studentTeams,
+      teacherTeams,
     },
   }
 }
