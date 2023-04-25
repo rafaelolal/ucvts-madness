@@ -28,7 +28,9 @@ export default function TeamsPage(props: { teams: TeamType[] }) {
 }
 
 export async function getServerSideProps() {
-  const teams = await getSheetData('Teams')
+  const teams = ((await getSheetData('Student Teams')) as TeamType[])?.concat(
+    (await getSheetData('Teacher Teams')) as TeamType[]
+  )
 
   return {
     props: {

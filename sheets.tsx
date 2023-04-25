@@ -16,7 +16,7 @@ export async function getSheetData(sheetName: string) {
       range: sheetName,
     })
 
-    const rows = response.data.values!.slice(1)
+    const rows: string[][] = response.data.values!.slice(1)
     var formattedRows
 
     if (
@@ -32,7 +32,7 @@ export async function getSheetData(sheetName: string) {
           description: row[5] || '',
         }
       })
-    } else if (['Teams'].includes(sheetName)) {
+    } else if (['Student Teams', 'Teacher Teams'].includes(sheetName)) {
       formattedRows = rows.map((row) => {
         return { name: row[0], players: row.slice(1) }
       })

@@ -133,7 +133,7 @@ export default function BracketPage(props: {
       <div style={{ overflowX: 'auto' }}>
         <Space>
           <div>
-            <h1>Winners Bracket</h1>
+            <h1>Live Bracket</h1>
             <Bracket
               mobileBreakpoint={0}
               roundTitleComponent={CustomRoundTitle}
@@ -168,7 +168,7 @@ export default function BracketPage(props: {
 }
 
 export async function getServerSideProps() {
-  const teams = await getSheetData('Teams')
+  const teams = await getSheetData('Student Teams')
   const winnersBracket = await getSheetData("Winners' Bracket")
   const otherGames = await getSheetData('Other Games')
 
