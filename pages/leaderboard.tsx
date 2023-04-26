@@ -1,5 +1,10 @@
 import axios from 'axios'
 import { Table, Typography } from 'antd'
+import { Agent } from 'https'
+
+const httpsAgent = new Agent({
+  rejectUnauthorized: false,
+})
 
 const getDataSource = (data: { name: string; points: number }[]) => {
   data.sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
@@ -69,7 +74,9 @@ export default function LeaderboardPage(props: {
 
 export async function getServerSideProps() {
   const response = await axios
-    .get('http://127.0.0.1:8000/api/users/')
+    .get('https://ralmeida.dev/ucvts_madness_server/api/users/', {
+      httpsAgent: httpsAgent,
+    })
     .then((response) => response)
     .catch((error) => {
       throw error
