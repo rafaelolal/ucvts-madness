@@ -66,9 +66,9 @@ export default function Navbar() {
 
               <li className='nav-item w-100 px-3 py-2'>
                 <Link
-                  href='/bets'
+                  href='/picks'
                   className={`btn btn-primary w-100  shadow-sm ${
-                    router.pathname == '/bets' ? 'disabled' : ''
+                    router.pathname == '/picks' ? 'disabled' : ''
                   }`}
                   onClick={() => setIsBetsButtonLoading(true)}
                 >
