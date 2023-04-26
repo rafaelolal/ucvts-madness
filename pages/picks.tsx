@@ -231,7 +231,7 @@ export default function BetsPage(props: {
       <p>
         Place your picks wisely, you can only do it once! Pay close attention to
         the teams playing each game. The games are labeled in the live bracket
-        page. If there are no teams for a game, bet N/A.
+        page. If there are no teams for a game, pick N/A.
       </p>
 
       <Form form={form}>

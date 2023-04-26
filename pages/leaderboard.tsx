@@ -44,7 +44,9 @@ const columns = [
     key: 'name',
     render: (_: any, record: { names: string[]; points: number }) =>
       record.names.map((name, i) => (
-        <Typography.Text key={i}>{name}</Typography.Text>
+        <p className='m-0' key={i}>
+          {name}
+        </p>
       )),
   },
   {
