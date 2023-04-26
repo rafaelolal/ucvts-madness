@@ -240,11 +240,11 @@ export default function BracketPage(props: {
                 <div className=' p-2 w-100 h-100 text-center bg-primary shadow'>
                   <h3>{game.description}</h3>
                   <h6>
-                    {game.team1Name} ({game.team2Name})
+                    {game.team1Name} ({game.team1Points})
                   </h6>
                   <h6>vs.</h6>
                   <h6>
-                    {game.team1Points} ({game.team2Points})
+                    {game.team2Name} ({game.team2Points})
                   </h6>
                 </div>
               </div>

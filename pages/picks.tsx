@@ -161,8 +161,8 @@ export default function BetsPage(props: {
         }
 
         notify.error({
-          message: `user/bet/ (${error}): ${error.message}`,
-          position: 'bottomRight',
+          message: `${error.message}`,
+          placement: 'bottomRight',
         })
 
         throw error
@@ -187,14 +187,14 @@ export default function BetsPage(props: {
         .then(() => {
           notify.success({
             message: 'Picks placed successfully!',
-            position: 'bottomRight',
+            placement: 'bottomRight',
           })
           setBetData(Object.values(values).join('*'))
           setIsBetsSubmitButtonLoading(false)
         })
         .catch((error) => {
           notify.error({
-            message: `bet/create/ (${error.code}): ${error.message}`,
+            message: `${error.message}`,
             placement: 'bottomRight',
           })
           setIsBetsSubmitButtonLoading(false)
@@ -211,7 +211,7 @@ export default function BetsPage(props: {
   }
 
   if (!user) {
-    return <SignInRequired message={'Sign in to place picks and win prizes!'} />
+    return <SignInRequired message={'Sign in to place picks!'} />
   }
 
   return (

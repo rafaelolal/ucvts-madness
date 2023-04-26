@@ -12,7 +12,7 @@ export default function Timer(props: {
   })
 
   useEffect(() => {
-    const target = new Date('Tue Apr 27 2023 3:00:00 GMT-0400')
+    const target = new Date('Tue Apr 27 2023 15:00:00 GMT-0400')
 
     const interval = setInterval(() => {
       const now = new Date()

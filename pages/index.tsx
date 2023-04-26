@@ -42,6 +42,15 @@ export default function IndexPage() {
     confirmPassword: string
   }) => {
     if (isSigningUp) {
+      if (values.password != values.confirmPassword) {
+        notify.warning({
+          message: 'Passwords do not match!',
+          placement: 'bottomRight',
+        })
+        setIsSubmitting(false)
+        return
+      }
+
       createUserWithEmailAndPassword(auth, values.email, values.password)
         .then((userCredential) => {
           const user = userCredential.user
@@ -62,7 +71,7 @@ export default function IndexPage() {
             .catch((error) => {
               deleteUser(auth.currentUser as User)
               notify.error({
-                message: `user/create/ (${error.code}): ${error.message}`,
+                message: `${error.message}`,
                 placement: 'bottomRight',
               })
               setIsSubmitting(false)
@@ -71,7 +80,7 @@ export default function IndexPage() {
         })
         .catch((error) => {
           notify.error({
-            message: `Firebase create user error (${error.code}): ${error.message}`,
+            message: `${error.message}`,
             placement: 'bottomRight',
           })
           setIsSubmitting(false)
@@ -84,7 +93,7 @@ export default function IndexPage() {
         })
         .catch((error) => {
           notify.error({
-            message: `Sign in error (${error.code}): ${error.message}`,
+            message: `${error.message}`,
             placement: 'bottomRight',
           })
           setIsSubmitting(false)
@@ -188,7 +197,7 @@ export default function IndexPage() {
                   <Input.Password
                     className='rounded-4'
                     prefix={<RedoOutlined />}
-                    placeholder='  Confirm password'
+                    placeholder='Confirm password'
                   />
                 </Form.Item>
               )}
