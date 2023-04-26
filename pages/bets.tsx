@@ -26,7 +26,6 @@ const CustomSeed = ({
   roundIndex,
   seedIndex,
 }: IRenderSeedProps) => {
-  console.log({ bet: seed.bet })
   return (
     <Seed mobileBreakpoint={breakpoint}>
       <SeedItem>

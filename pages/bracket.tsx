@@ -61,7 +61,6 @@ const CustomSeed = ({
 }
 
 const getRounds = (games: GameType[], teamCount: number) => {
-  console.log({ teamCount })
   const gameCount = pow2ceil(teamCount - 1) - 1
   const roundCount = Math.floor(Math.log2(gameCount)) + 1
 
@@ -150,7 +149,13 @@ export default function BracketPage(props: {
   const mutateData = () => {
     mutateWinnersBracket()
     mutateOtherGames()
-    setTimeout(mutateData, 60 * 1000)
+    axios
+      .post('http://127.0.0.1:8000/api/leaderboard/update/', winnersBracket)
+      .then(() => {})
+      .catch((error) => {
+        throw error
+      })
+    setTimeout(mutateData, 30 * 1000)
   }
 
   if (winnersBracketError || otherGamesError) {
@@ -160,6 +165,8 @@ export default function BracketPage(props: {
   if (isLoading || !winnersBracket || !otherGames) {
     return <Loading />
   }
+
+  mutateData()
 
   return (
     <>
