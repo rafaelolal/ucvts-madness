@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Table } from 'antd'
+import { Table, Typography } from 'antd'
 
 const getDataSource = (data: { name: string; points: number }[]) => {
   data.sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
@@ -38,7 +38,9 @@ const columns = [
     dataIndex: 'name',
     key: 'name',
     render: (_: any, record: { names: string[]; points: number }) =>
-      record.names.map((name) => <p>{name}</p>),
+      record.names.map((name, i) => (
+        <Typography.Text key={i}>{name}</Typography.Text>
+      )),
   },
   {
     title: 'Points',

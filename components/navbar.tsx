@@ -1,6 +1,6 @@
 import { useAppContext } from '@/context/state'
 import { auth } from '@/firebaseConfig'
-import { Button, Space } from 'antd'
+import { Spin } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -17,9 +17,10 @@ export default function Navbar() {
   return (
     <nav className='navbar bg-body-tertiary shadow-sm'>
       <div className='container-fluid'>
-        <a className='navbar-brand' href='#'>
+        <Link className='navbar-brand' href='/bracket'>
           UCVTS Madness
-        </a>
+        </Link>
+
         <button
           className='navbar-toggler'
           type='button'
@@ -30,16 +31,18 @@ export default function Navbar() {
         >
           <span className='navbar-toggler-icon'></span>
         </button>
+
         <div
           className='offcanvas offcanvas-end'
           id='offcanvasNavbar'
           aria-labelledby='offcanvasNavbarLabel'
-          style={{ width: '70%' }}
+          style={{ width: '70%', maxWidth: '300px' }}
         >
           <div className='offcanvas-header'>
             <h5 className='offcanvas-title' id='offcanvasNavbarLabel'>
               Navigation
             </h5>
+
             <button
               type='button'
               className='btn-close'
@@ -50,90 +53,74 @@ export default function Navbar() {
           <div className='offcanvas-body'>
             <ul className='navbar-nav justify-content-end flex-grow-1 pe-3'>
               <li className='nav-item w-100 px-3 py-2 '>
-                <Link href='/bracket'>
-                  <Button
-                    className='w-100 btnBlue shadow-sm'
-                    type='primary'
-                    loading={isBracketButtonLoading}
-                    disabled={router.pathname == '/bracket'}
-                    onClick={() => setIsBracketButtonLoading(true)}
-                  >
-                    Live Bracket
-                  </Button>
+                <Link
+                  href='/bracket'
+                  className={`btn btn-primary w-100 btnBlue shadow-sm ${
+                    router.pathname == '/bracket' ? 'disabled' : ''
+                  }`}
+                  onClick={() => setIsBracketButtonLoading(true)}
+                >
+                  {isBracketButtonLoading ? <Spin /> : 'Live Bracket'}
                 </Link>
               </li>
 
               <li className='nav-item w-100 px-3 py-2'>
-                <Link href='/bets'>
-                  <Button
-                    className='w-100 btnBlue shadow-sm'
-                    type='primary'
-                    loading={isBetsButtonLoading}
-                    disabled={router.pathname == '/bets'}
-                    onClick={() => setIsBetsButtonLoading(true)}
-                  >
-                    Bets
-                  </Button>
+                <Link
+                  href='/bets'
+                  className={`btn btn-primary w-100 btnBlue shadow-sm ${
+                    router.pathname == '/bets' ? 'disabled' : ''
+                  }`}
+                  onClick={() => setIsBetsButtonLoading(true)}
+                >
+                  {isBetsButtonLoading ? <Spin /> : 'Your Bets'}
                 </Link>
               </li>
 
               <li className='nav-item w-100 px-3 py-2'>
-                <Link href='/leaderboard'>
-                  <Button
-                    className='w-100 btnBlue shadow-sm'
-                    type='primary'
-                    loading={isLeaderboardButtonLoading}
-                    disabled={router.pathname == '/leaderboard'}
-                    onClick={() => setIsLeaderboardButtonLoading(true)}
-                  >
-                    Leaderboard
-                  </Button>
+                <Link
+                  href='/leaderboard'
+                  className={`btn btn-primary w-100 btnBlue shadow-sm loading ${
+                    router.pathname == '/leaderboard' ? 'disabled' : ''
+                  }`}
+                  onClick={() => setIsLeaderboardButtonLoading(true)}
+                >
+                  {isLeaderboardButtonLoading ? <Spin /> : 'Leaderboard'}
                 </Link>
               </li>
 
               <li className='nav-item w-100 px-3 py-2'>
-                <Link href='/teams'>
-                  <Button
-                    className='w-100 btnBlue shadow-sm'
-                    type='primary'
-                    loading={isTeamsButtonLoading}
-                    disabled={router.pathname == '/teams'}
-                    onClick={() => setIsTeamsButtonLoading(true)}
-                  >
-                    Teams
-                  </Button>
+                <Link
+                  href='/teams'
+                  className={`btn btn-primary w-100 btnBlue shadow-sm loading ${
+                    router.pathname == '/teams' ? 'disabled' : ''
+                  }`}
+                  onClick={() => setIsTeamsButtonLoading(true)}
+                >
+                  {isTeamsButtonLoading ? <Spin /> : 'Teams'}
                 </Link>
               </li>
+
               <li className='nav-item w-100 px-3 py-2'>
                 {isLoading ? (
-                  <div className='btnOrange'>
-                    <Button
-                      className='w-100'
-                      type='primary'
-                      loading={true}
-                      disabled={true}
-                    />
-                  </div>
+                  <a className='btn btn-primary btnBlue shadow-sm'>
+                    <Spin />
+                  </a>
                 ) : user ? (
-                  <Button
-                    className='w-100 btnOrange'
-                    type='primary'
+                  <a
+                    className='btn btn-primary w-100 btnBlue shadow-sm'
                     onClick={() => {
                       auth.signOut()
                     }}
                   >
                     Sign Out
-                  </Button>
+                  </a>
                 ) : (
-                  <Button
-                    className='w-100 btnOrange'
-                    type='primary'
-                    onClick={() => {
-                      router.push('/')
-                    }}
+                  <Link
+                    href='/'
+                    className='btn btn-primary w-100 btnBlue shadow-sm'
                   >
                     Sign In
-                  </Button>
+                  </Link>
                 )}
               </li>
             </ul>

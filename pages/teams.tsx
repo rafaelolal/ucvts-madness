@@ -1,4 +1,4 @@
-import { Table } from 'antd'
+import { Table, Typography } from 'antd'
 import { getSheetData } from '@/sheets'
 import { TeamType } from '@/types'
 
@@ -13,7 +13,9 @@ const columns = [
     dataIndex: 'players',
     key: 'players',
     render: (_: any, record: TeamType) =>
-      record.players.map((name) => <p>{name}</p>),
+      record.players.map((name, i) => (
+        <Typography.Text key={i}>{name}</Typography.Text>
+      )),
   },
 ]
 

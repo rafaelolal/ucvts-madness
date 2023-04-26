@@ -1,9 +1,9 @@
 import Loading from '@/components/loading'
 import { useAppContext } from '@/context/state'
-import { pow2ceil } from '@/helpers'
+import { addEllipsis, pow2ceil } from '@/helpers'
 import { getSheetData } from '@/sheets'
 import { GameType } from '@/types'
-import { Space } from 'antd'
+import { Space, Typography } from 'antd'
 import {
   Bracket,
   Seed,
@@ -11,9 +11,11 @@ import {
   SeedTeam,
   IRenderSeedProps,
 } from 'react-brackets'
+import axios from 'axios'
+import useSWR from 'swr'
 
 const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
-  return <h4 style={{ textAlign: 'center' }}>{title}</h4>
+  return <h3 style={{ textAlign: 'center' }}>{title}</h3>
 }
 
 const CustomSeed = ({
@@ -32,14 +34,19 @@ const CustomSeed = ({
         <div>
           {seed.teams.map((team, i) => (
             <SeedTeam
+              key={i}
               className='justify-content-between'
               style={{
                 backgroundColor:
-                  seed.isFinished && team == winner ? 'orange' : 'blue',
+                  seed.isFinished && team == winner ? 'green' : 'black',
               }}
             >
-              <p>{team.name || '\xa0'}</p>
-              <p>{team.points || '\xa0'}</p>
+              <Typography.Text style={{ color: 'white' }}>
+                {addEllipsis(team.name as string, 25) || '\xa0'}
+              </Typography.Text>
+              <Typography.Text style={{ color: 'white' }}>
+                {team.points}
+              </Typography.Text>
             </SeedTeam>
           ))}
         </div>
@@ -55,7 +62,6 @@ const CustomSeed = ({
 }
 
 const getRounds = (games: GameType[], teamCount: number) => {
-  console.log({ teamCount })
   const gameCount = pow2ceil(teamCount - 1) - 1
   const roundCount = Math.floor(Math.log2(gameCount)) + 1
 
@@ -115,69 +121,99 @@ export default function BracketPage(props: {
 }) {
   const { user, isLoading } = useAppContext()
 
-  if (isLoading) {
+  const {
+    data: winnersBracket,
+    error: winnersBracketError,
+    mutate: mutateWinnersBracket,
+  } = useSWR('/ucvts-madness/api/getWinnersBracket', async (url: string) => {
+    return await axios
+      .get(url)
+      .then((response) => response.data.data)
+      .catch((error) => {
+        throw error
+      })
+  })
+
+  const {
+    data: otherGames,
+    error: otherGamesError,
+    mutate: mutateOtherGames,
+  } = useSWR('/ucvts-madness/api/getOtherGames', async (url: string) => {
+    return await axios
+      .get(url)
+      .then((response) => response.data.data)
+      .catch((error) => {
+        throw error
+      })
+  })
+
+  const mutateData = () => {
+    mutateWinnersBracket()
+    mutateOtherGames()
+    axios
+      .post('http://127.0.0.1:8000/api/leaderboard/update/', winnersBracket)
+      .then(() => {})
+      .catch((error) => {
+        throw error
+      })
+    setTimeout(mutateData, 120 * 1000)
+  }
+
+  if (winnersBracketError || otherGamesError) {
+    return <h1>Error</h1>
+  }
+
+  if (isLoading || !winnersBracket || !otherGames) {
     return <Loading />
   }
 
+  mutateData()
+
   return (
     <>
-      <div className='mt-3'>
-        {user && (
-          <h6 className='ms-3 fc-grey' style={{ fontSize: '0.8rem' }}>
-            Welcome {user.email}
-          </h6>
-        )}
+      {user && <h1>Welcome {user.email}</h1>}
 
-        <h2 className='ms-3 mb-5' style={{ fontFamily: 'galactic' }}>
-          Live Bracket
-        </h2>
-
-        <div style={{ overflowX: 'auto' }}>
-          <Bracket
-            mobileBreakpoint={0}
-            roundTitleComponent={CustomRoundTitle}
-            renderSeedComponent={CustomSeed}
-            rounds={getRounds(props.winnersBracket, props.teamCount)}
-          />
-        </div>
-
-        <h2 className='ms-3 mt-5' style={{ fontFamily: 'galactic' }}>
-          Other Games
-        </h2>
-
-        <Space>
-          <div className='px-3 bg-primary shadow'>
-            <div className='row py-3'>
-              {props.otherGames.map((game) => {
-                if (!game.description) {
-                  return
-                }
-
-                return (
-                  <div className='col'>
-                    <h1>{game.description}</h1>
-                    {game.team1Name} ({game.team2Name}) vs. {game.team1Points} (
-                    {game.team2Points})
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </Space>
+      <div style={{ overflowX: 'auto' }}>
+        <h1>Live Bracket</h1>
+        <Bracket
+          mobileBreakpoint={0}
+          roundTitleComponent={CustomRoundTitle}
+          renderSeedComponent={CustomSeed}
+          rounds={getRounds(winnersBracket, props.teamCount)}
+        />
       </div>
+
+      <h1>Other Games</h1>
+
+      <Space>
+        {otherGames.map((game: GameType, i: number) => {
+          if (!game.description) {
+            return
+          }
+
+          return (
+            <Space
+              key={i}
+              direction='vertical'
+              style={{ backgroundColor: '#1677ff' }}
+            >
+              <h1>{game.description}</h1>
+              <p>
+                {game.team1Name} ({game.team2Name}) vs. {game.team1Points} (
+                {game.team2Points})
+              </p>
+            </Space>
+          )
+        })}
+      </Space>
     </>
   )
 }
 
 export async function getServerSideProps() {
   const teams = await getSheetData('Student Teams')
-  const winnersBracket = await getSheetData("Winners' Bracket")
-  const otherGames = await getSheetData('Other Games')
-
   return {
     props: {
-      winnersBracket,
-      otherGames,
       teamCount: teams!.length,
     },
   }
