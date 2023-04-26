@@ -55,7 +55,7 @@ export default function Navbar() {
               <li className='nav-item w-100 px-3 py-2 '>
                 <Link
                   href='/bracket'
-                  className={`btn btn-primary w-100 btnBlue shadow-sm ${
+                  className={`btn btn-primary w-100  shadow-sm ${
                     router.pathname == '/bracket' ? 'disabled' : ''
                   }`}
                   onClick={() => setIsBracketButtonLoading(true)}
@@ -67,19 +67,19 @@ export default function Navbar() {
               <li className='nav-item w-100 px-3 py-2'>
                 <Link
                   href='/bets'
-                  className={`btn btn-primary w-100 btnBlue shadow-sm ${
+                  className={`btn btn-primary w-100  shadow-sm ${
                     router.pathname == '/bets' ? 'disabled' : ''
                   }`}
                   onClick={() => setIsBetsButtonLoading(true)}
                 >
-                  {isBetsButtonLoading ? <Spin /> : 'Your Bets'}
+                  {isBetsButtonLoading ? <Spin /> : 'Your Picks'}
                 </Link>
               </li>
 
               <li className='nav-item w-100 px-3 py-2'>
                 <Link
                   href='/leaderboard'
-                  className={`btn btn-primary w-100 btnBlue shadow-sm loading ${
+                  className={`btn btn-primary w-100  shadow-sm loading ${
                     router.pathname == '/leaderboard' ? 'disabled' : ''
                   }`}
                   onClick={() => setIsLeaderboardButtonLoading(true)}
@@ -91,7 +91,7 @@ export default function Navbar() {
               <li className='nav-item w-100 px-3 py-2'>
                 <Link
                   href='/teams'
-                  className={`btn btn-primary w-100 btnBlue shadow-sm loading ${
+                  className={`btn btn-primary w-100  shadow-sm loading ${
                     router.pathname == '/teams' ? 'disabled' : ''
                   }`}
                   onClick={() => setIsTeamsButtonLoading(true)}
@@ -102,12 +102,12 @@ export default function Navbar() {
 
               <li className='nav-item w-100 px-3 py-2'>
                 {isLoading ? (
-                  <a className='btn btn-primary btnBlue shadow-sm'>
+                  <a className='btn btn-primary  shadow-sm'>
                     <Spin />
                   </a>
                 ) : user ? (
                   <a
-                    className='btn btn-primary w-100 btnBlue shadow-sm'
+                    className='btn btn-primary w-100  shadow-sm'
                     onClick={() => {
                       auth.signOut()
                     }}
@@ -115,10 +115,7 @@ export default function Navbar() {
                     Sign Out
                   </a>
                 ) : (
-                  <Link
-                    href='/'
-                    className='btn btn-primary w-100 btnBlue shadow-sm'
-                  >
+                  <Link href='/' className='btn btn-primary w-100  shadow-sm'>
                     Sign In
                   </Link>
                 )}

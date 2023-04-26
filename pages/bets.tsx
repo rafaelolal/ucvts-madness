@@ -186,7 +186,7 @@ export default function BetsPage(props: {
         )
         .then(() => {
           notify.success({
-            message: 'Bets placed successfully!',
+            message: 'Picks placed successfully!',
             position: 'bottomRight',
           })
           setBetData(Object.values(values).join('*'))
@@ -211,13 +211,13 @@ export default function BetsPage(props: {
   }
 
   if (!user) {
-    return <SignInRequired message={'Sign in to place bets and win prizes!'} />
+    return <SignInRequired message={'Sign in to place picks and win prizes!'} />
   }
 
   return (
     <div className='container my-4'>
       <h1 className='text-center basketball2 fs-huge m-0'>
-        Bets
+        Picks
         <img
           style={{ width: '40px' }}
           src='/ucvts-madness/icons8-basketball-64 (1).png'
@@ -226,10 +226,10 @@ export default function BetsPage(props: {
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 
-      <h3>Your Bets</h3>
+      <h3>Your Picks</h3>
 
       <p>
-        Place your bets wisely, you can only do it once! Pay close attention to
+        Place your picks wisely, you can only do it once! Pay close attention to
         the teams playing each game. The games are labeled in the live bracket
         page. If there are no teams for a game, bet N/A.
       </p>
@@ -264,7 +264,7 @@ export default function BetsPage(props: {
               onFinish()
             }}
           >
-            {isBetsSubmitButtonLoading ? <Spin /> : 'Place Bets'}
+            {isBetsSubmitButtonLoading ? <Spin /> : 'Place Picks'}
           </button>
         )}
       </Form>

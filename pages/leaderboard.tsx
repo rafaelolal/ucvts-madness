@@ -68,8 +68,8 @@ export default function LeaderboardPage(props: {
       </h1>
 
       <p className='text-center'>
-        This leaderboard is for bets. The more accurate your bets are, the more
-        points you will get!
+        This leaderboard is for picks. The more accurate your picks are, the
+        more points you will get!
       </p>
 
       <div style={{ boxShadow: ' 0 0rem 0.5rem rgba(0,0,0, .15)' }}>
