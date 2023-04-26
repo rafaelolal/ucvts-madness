@@ -236,7 +236,7 @@ export default function BracketPage(props: {
             }
 
             return (
-              <div className='col p-2'>
+              <div key={i} className='col p-2'>
                 <div className=' p-2 w-100 h-100 text-center bg-primary shadow'>
                   <h3>{game.description}</h3>
                   <h6>

@@ -234,38 +234,40 @@ export default function BetsPage(props: {
         page. If there are no teams for a game, bet N/A.
       </p>
 
-      <div
-        className='p-3'
-        style={{
-          backgroundColor: '#81b6fc',
-          overflowX: 'auto',
-          margin: '0 -1.25rem',
-          boxShadow: '0px 0px 11px 2px rgba(0,0,0,0.2)',
-        }}
-      >
-        <Bracket
-          mobileBreakpoint={0}
-          roundTitleComponent={CustomRoundTitle}
-          renderSeedComponent={CustomSeed}
-          rounds={getRounds(
-            props.studentTeams.length,
-            props.studentTeams.concat(props.teacherTeams),
-            betData
-          )}
-        />
-      </div>
-
-      {canMakeBets && !betData && (
-        <button
-          className='btn btn-primary mt-4'
-          onClick={() => {
-            setIsBetsSubmitButtonLoading(true)
-            onFinish()
+      <Form form={form}>
+        <div
+          className='p-3'
+          style={{
+            backgroundColor: '#81b6fc',
+            overflowX: 'auto',
+            margin: '0 -1.25rem',
+            boxShadow: '0px 0px 11px 2px rgba(0,0,0,0.2)',
           }}
         >
-          {isBetsSubmitButtonLoading ? <Spin /> : 'Place Bets'}
-        </button>
-      )}
+          <Bracket
+            mobileBreakpoint={0}
+            roundTitleComponent={CustomRoundTitle}
+            renderSeedComponent={CustomSeed}
+            rounds={getRounds(
+              props.studentTeams.length,
+              props.studentTeams.concat(props.teacherTeams),
+              betData
+            )}
+          />
+        </div>
+
+        {canMakeBets && !betData && (
+          <button
+            className='btn btn-primary mt-4'
+            onClick={() => {
+              setIsBetsSubmitButtonLoading(true)
+              onFinish()
+            }}
+          >
+            {isBetsSubmitButtonLoading ? <Spin /> : 'Place Bets'}
+          </button>
+        )}
+      </Form>
     </div>
   )
 }

@@ -15,7 +15,7 @@ const columns = [
     key: 'players',
     render: (_: any, record: TeamType) =>
       record.players.map((name, i) => (
-        <p className='m-0' key={i}>
+        <p key={i} className='m-0'>
           {name}
         </p>
       )),
