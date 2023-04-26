@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang='en'>
       <Head>
-        <link rel='icon' href='/bhm/favicon.ico' />
+        <link rel='icon' href='/ucvts-madness/favicon.ico' />
       </Head>
 
       <body>
