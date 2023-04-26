@@ -102,16 +102,7 @@ export default function IndexPage() {
   return (
     <>
       <Container className='flex-column'>
-        <h1
-          style={{
-            marginBottom: '20px',
-            fontSize: '1.2rem',
-            textAlign: 'center',
-            fontWeight: 'bold',
-          }}
-        >
-          Welcome
-        </h1>
+        <h1 className='fs-huge basketball2 text-center mb-4'>Welcome</h1>
         <Space direction='vertical' style={{ alignItems: 'center' }}>
           <Space>
             <Button
@@ -132,7 +123,7 @@ export default function IndexPage() {
           </Space>
 
           <Card
-            className='rounded-4 mx-auto my-3'
+            className='rounded-4 mx-auto my-4 pt-2'
             style={{ boxShadow: '0px 4px 10px rgba(0,0,0,0.15)' }}
             title={isSigningUp ? 'Signing Up' : 'Signing In'}
           >

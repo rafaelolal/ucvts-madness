@@ -213,7 +213,7 @@ export default function BetsPage(props: {
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 
-      <h5>Your Bets</h5>
+      <h3>Your Bets</h3>
 
       <div
         className='p-3'

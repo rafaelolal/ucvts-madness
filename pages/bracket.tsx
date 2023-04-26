@@ -216,24 +216,26 @@ export default function BracketPage(props: {
           />
         </div>
 
-        <h2 className=' mt-5 basketball'>Other Games</h2>
+        <h3 className=' mt-5'>Other Games</h3>
 
-        <div className='row m-1 justify-content-center'>
+        <div className='row row-cols-2 row-cols-md-3 m-1 justify-content-center'>
           {otherGames.map((game: GameType, i: number) => {
             if (!game.description) {
               return
             }
 
             return (
-              <div className='col p-2 m-2 text-center bg-primary'>
-                <h1>{game.description}</h1>
-                <h6>
-                  {game.team1Name} ({game.team2Name})
-                </h6>
-                <h6>vs.</h6>
-                <h6>
-                  {game.team1Points} ({game.team2Points})
-                </h6>
+              <div className='col p-2'>
+                <div className=' p-2 w-100 h-100 text-center bg-primary shadow'>
+                  <h3>{game.description}</h3>
+                  <h6>
+                    {game.team1Name} ({game.team2Name})
+                  </h6>
+                  <h6>vs.</h6>
+                  <h6>
+                    {game.team1Points} ({game.team2Points})
+                  </h6>
+                </div>
               </div>
             )
           })}

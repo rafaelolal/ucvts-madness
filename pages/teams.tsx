@@ -15,7 +15,9 @@ const columns = [
     key: 'players',
     render: (_: any, record: TeamType) =>
       record.players.map((name, i) => (
-        <Typography.Text key={i}>{name}</Typography.Text>
+        <p className='m-0' key={i}>
+          {name}
+        </p>
       )),
   },
 ]
@@ -31,12 +33,14 @@ export default function TeamsPage(props: { teams: TeamType[] }) {
         ></img>
       </h1>
       <div className='col-12 col-md-7 mx-auto'>
-        <Table
-          bordered={true}
-          pagination={false}
-          dataSource={props.teams}
-          columns={columns}
-        />
+        <div style={{ boxShadow: ' 0 0rem 0.5rem rgba(0,0,0, .15)' }}>
+          <Table
+            bordered={true}
+            pagination={false}
+            dataSource={props.teams}
+            columns={columns}
+          />
+        </div>
       </div>
     </div>
   )

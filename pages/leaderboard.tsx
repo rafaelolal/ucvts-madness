@@ -61,13 +61,15 @@ export default function LeaderboardPage(props: {
           src='/ucvts-madness/icons8-basketball-64 (1).png'
         ></img>
       </h1>
-      <Table
-        pagination={{
-          defaultPageSize: 10,
-        }}
-        dataSource={getDataSource(props.data)}
-        columns={columns}
-      />
+      <div style={{ boxShadow: ' 0 0rem 0.5rem rgba(0,0,0, .15)' }}>
+        <Table
+          pagination={{
+            defaultPageSize: 10,
+          }}
+          dataSource={getDataSource(props.data)}
+          columns={columns}
+        />
+      </div>
     </div>
   )
 }
