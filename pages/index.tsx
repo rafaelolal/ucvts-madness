@@ -16,6 +16,7 @@ import {
 import { auth } from '../firebaseConfig'
 import Loading from '@/components/loading'
 import { Agent } from 'https'
+import Link from 'next/link'
 
 const httpsAgent = new Agent({
   rejectUnauthorized: false,
@@ -33,6 +34,7 @@ export default function IndexPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSigningUp, setIsSigningUp] = useState(true)
+  const [isBracketButtonLoading, setIsBracketButtonLoading] = useState(false)
 
   const onFinish = (values: {
     email: string
@@ -110,6 +112,16 @@ export default function IndexPage() {
       <Container className='flex-column'>
         <h1 className='fs-huge basketball2 text-center mb-4'>Welcome</h1>
         <Space direction='vertical' style={{ alignItems: 'center' }}>
+          <Link
+            href='/bracket'
+            className={`btn btn-primary w-100 btnBlue shadow-sm ${
+              router.pathname == '/bracket' ? 'disabled' : ''
+            }`}
+            onClick={() => setIsBracketButtonLoading(true)}
+          >
+            {isBracketButtonLoading ? <Spin /> : 'Live Bracket'}
+          </Link>
+
           <Space>
             <button
               className={`btn btn-secondary ${isSigningUp ? 'disabled' : ''}`}
@@ -131,6 +143,8 @@ export default function IndexPage() {
             style={{ boxShadow: '0px 4px 10px rgba(0,0,0,0.15)' }}
             title={isSigningUp ? 'Signing Up' : 'Signing In'}
           >
+            <p>You must use your school issued email!</p>
+
             <Form onFinish={onFinish} onFinishFailed={onFinishFailed}>
               <Form.Item
                 name='email'

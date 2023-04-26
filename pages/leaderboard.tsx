@@ -66,6 +66,12 @@ export default function LeaderboardPage(props: {
           src='/ucvts-madness/icons8-basketball-64 (1).png'
         ></img>
       </h1>
+
+      <p className='text-center'>
+        This leaderboard is for bets. The more accurate your bets are, the more
+        points you will get!
+      </p>
+
       <div style={{ boxShadow: ' 0 0rem 0.5rem rgba(0,0,0, .15)' }}>
         <Table
           pagination={false}
