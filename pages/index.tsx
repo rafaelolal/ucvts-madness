@@ -184,7 +184,7 @@ export default function IndexPage() {
               >
                 <button
                   className='btn btn-primary'
-                  htmlType='submit'
+                  type='submit'
                   onClick={() => setIsSubmitting(true)}
                 >
                   {isSubmitting ? <Spin /> : 'Submit'}
