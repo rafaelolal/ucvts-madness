@@ -13,6 +13,11 @@ import {
 } from 'react-brackets'
 import axios from 'axios'
 import useSWR from 'swr'
+import { Agent } from 'https'
+
+const httpsAgent = new Agent({
+  rejectUnauthorized: false,
+})
 
 const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
   return <h6 style={{ textAlign: 'center' }}>{title}</h6>
@@ -164,7 +169,13 @@ export default function BracketPage(props: {
     mutateWinnersBracket()
     mutateOtherGames()
     axios
-      .post('http://127.0.0.1:8000/api/leaderboard/update/', winnersBracket)
+      .post(
+        'https://ralmeida.dev/ucvts_madness_server/api/leaderboard/update/',
+        winnersBracket,
+        {
+          httpsAgent: httpsAgent,
+        }
+      )
       .then(() => {})
       .catch((error) => {
         throw error

@@ -15,6 +15,11 @@ import {
   IRenderSeedProps,
 } from 'react-brackets'
 import { pow2ceil } from '@/helpers'
+import { Agent } from 'https'
+
+const httpsAgent = new Agent({
+  rejectUnauthorized: false,
+})
 
 const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
   return <h6 style={{ textAlign: 'center' }}>{title}</h6>
@@ -133,7 +138,11 @@ export default function BetsPage(props: {
     }
 
     axios
-      .get(`http://127.0.0.1:8000/api/user/${user.uid}/bet/`)
+      .get(
+        `https://ralmeida.dev/ucvts_madness_server/api/user/${user.uid}/bet/`, {
+            httpsAgent: httpsAgent,
+          }
+      )
       .then((response) => {
         var initialValues: any = {} // fix datatype, I don't know how though
         const formattedBets = response.data.order.split('*')
@@ -164,10 +173,12 @@ export default function BetsPage(props: {
       const values = await form.validateFields()
 
       axios
-        .post('http://127.0.0.1:8000/api/bet/create/', {
+        .post('https://ralmeida.dev/ucvts_madness_server/api/bet/create/', {
           user: user!.uid,
           order: Object.values(values).join('*'),
-        })
+        }, {
+            httpsAgent: httpsAgent,
+          })
         .then(() => {
           notify.success({
             message: 'Bets placed successfully!',

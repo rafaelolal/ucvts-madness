@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { Agent } from 'https'
 import { useState } from 'react'
 import { Card, Input, Button, Form, Space } from 'antd'
 import { MailOutlined } from '@ant-design/icons'
@@ -16,6 +15,7 @@ import {
 } from 'firebase/auth'
 import { auth } from '../firebaseConfig'
 import Loading from '@/components/loading'
+import { Agent } from 'https'
 
 const httpsAgent = new Agent({
   rejectUnauthorized: false,
@@ -44,10 +44,16 @@ export default function IndexPage() {
         .then((userCredential) => {
           const user = userCredential.user
           axios
-            .post('http://127.0.0.1:8000/api/user/create/', {
-              id: user.uid,
-              email: user.email,
-            })
+            .post(
+              'https://ralmeida.dev/ucvts_madness_server/api/user/create/',
+              {
+                id: user.uid,
+                email: user.email,
+              },
+              {
+                httpsAgent: httpsAgent,
+              }
+            )
             .then(() => {
               router.replace('/bracket')
             })
