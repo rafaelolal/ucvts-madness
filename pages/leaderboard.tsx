@@ -68,9 +68,7 @@ export default function LeaderboardPage(props: {
       </h1>
       <div style={{ boxShadow: ' 0 0rem 0.5rem rgba(0,0,0, .15)' }}>
         <Table
-          pagination={{
-            defaultPageSize: 10,
-          }}
+          pagination={false}
           dataSource={getDataSource(props.data)}
           columns={columns}
         />

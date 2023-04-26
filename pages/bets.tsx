@@ -1,6 +1,6 @@
 import { useAppContext } from '@/context/state'
 import { getSheetData } from '@/sheets'
-import { Button, Form, Select, Typography } from 'antd'
+import { Button, Form, Select, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import Timer from '@/components/timer'
@@ -139,9 +139,10 @@ export default function BetsPage(props: {
 
     axios
       .get(
-        `https://ralmeida.dev/ucvts_madness_server/api/user/${user.uid}/bet/`, {
-            httpsAgent: httpsAgent,
-          }
+        `https://ralmeida.dev/ucvts_madness_server/api/user/${user.uid}/bet/`,
+        {
+          httpsAgent: httpsAgent,
+        }
       )
       .then((response) => {
         var initialValues: any = {} // fix datatype, I don't know how though
@@ -173,12 +174,16 @@ export default function BetsPage(props: {
       const values = await form.validateFields()
 
       axios
-        .post('https://ralmeida.dev/ucvts_madness_server/api/bet/create/', {
-          user: user!.uid,
-          order: Object.values(values).join('*'),
-        }, {
+        .post(
+          'https://ralmeida.dev/ucvts_madness_server/api/bet/create/',
+          {
+            user: user!.uid,
+            order: Object.values(values).join('*'),
+          },
+          {
             httpsAgent: httpsAgent,
-          })
+          }
+        )
         .then(() => {
           notify.success({
             message: 'Bets placed successfully!',
@@ -248,17 +253,15 @@ export default function BetsPage(props: {
       </div>
 
       {canMakeBets && !betData && (
-        <Button
-          className='mt-4'
-          type='primary'
-          loading={isBetsSubmitButtonLoading}
+        <button
+          className='btn btn-primary mt-4'
           onClick={() => {
             setIsBetsSubmitButtonLoading(true)
             onFinish()
           }}
         >
-          Place Bets
-        </Button>
+          {isBetsSubmitButtonLoading ? <Spin /> : 'Place Bets'}
+        </button>
       )}
     </div>
   )

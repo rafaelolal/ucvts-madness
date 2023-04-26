@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useState } from 'react'
-import { Card, Input, Button, Form, Space } from 'antd'
+import { Card, Input, Button, Form, Space, Spin } from 'antd'
 import { MailOutlined } from '@ant-design/icons'
 import { KeyOutlined } from '@ant-design/icons'
 import { RedoOutlined } from '@ant-design/icons'
@@ -111,21 +111,19 @@ export default function IndexPage() {
         <h1 className='fs-huge basketball2 text-center mb-4'>Welcome</h1>
         <Space direction='vertical' style={{ alignItems: 'center' }}>
           <Space>
-            <Button
-              type='primary'
-              disabled={isSigningUp}
+            <button
+              className={`btn btn-secondary ${isSigningUp ? 'disabled' : ''}`}
               onClick={() => setIsSigningUp(!isSigningUp)}
             >
               Sign Up
-            </Button>
+            </button>
 
-            <Button
-              type='primary'
-              disabled={!isSigningUp}
+            <button
+              className={`btn btn-secondary ${!isSigningUp ? 'disabled' : ''}`}
               onClick={() => setIsSigningUp(!isSigningUp)}
             >
               Sign In
-            </Button>
+            </button>
           </Space>
 
           <Card
@@ -184,14 +182,13 @@ export default function IndexPage() {
               <Form.Item
                 style={{ display: 'flex', justifyContent: 'flex-end' }}
               >
-                <Button
-                  type='primary'
+                <button
+                  className='btn btn-primary'
                   htmlType='submit'
-                  loading={isSubmitting}
                   onClick={() => setIsSubmitting(true)}
                 >
-                  Submit
-                </Button>
+                  {isSubmitting ? <Spin /> : 'Submit'}
+                </button>
               </Form.Item>
             </Form>
           </Card>
