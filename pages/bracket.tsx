@@ -15,7 +15,7 @@ import axios from 'axios'
 import useSWR from 'swr'
 
 const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
-  return <h3 style={{ textAlign: 'center' }}>{title}</h3>
+  return <h6 style={{ textAlign: 'center' }}>{title}</h6>
 }
 
 const CustomSeed = ({
@@ -30,30 +30,43 @@ const CustomSeed = ({
 
   return (
     <Seed mobileBreakpoint={breakpoint}>
-      <SeedItem>
+      <SeedItem
+        className='p-2'
+        style={{
+          boxShadow: '0px 0px 0px #000',
+        }}
+      >
         <div>
           {seed.teams.map((team, i) => (
             <SeedTeam
               key={i}
-              className='justify-content-between'
+              className='justify-content-between mb-1'
               style={{
-                backgroundColor:
-                  seed.isFinished && team == winner ? 'green' : 'black',
+                minWidth: '200px',
+                backgroundColor: !seed.isFinished
+                  ? '#fff'
+                  : seed.isFinished && team == winner
+                  ? '#fe8e22'
+                  : '#D3D3D3',
+
+                color: !seed.isFinished
+                  ? '#000'
+                  : seed.isFinished && team == winner
+                  ? '#000'
+                  : 'grey',
               }}
             >
-              <Typography.Text style={{ color: 'white' }}>
-                {addEllipsis(team.name as string, 25) || '\xa0'}
-              </Typography.Text>
-              <Typography.Text style={{ color: 'white' }}>
-                {team.points}
-              </Typography.Text>
+              <p className='m-0'>
+                {addEllipsis(team.name as string, 22) || '\xa0'}
+              </p>
+              <p className='m-0'>{team.points}</p>
             </SeedTeam>
           ))}
         </div>
       </SeedItem>
 
       <div>
-        <p style={{ margin: 0, padding: 0, color: '#aaa' }}>
+        <p style={{ margin: 0, padding: 0, color: '#000' }}>
           {seed.description}
         </p>
       </div>
@@ -171,41 +184,61 @@ export default function BracketPage(props: {
 
   return (
     <>
-      {user && <h1>Welcome {user.email}</h1>}
+      <div className='container my-4'>
+        {user && (
+          <h6 className=' text-center text-grey' style={{ fontSize: '0.8rem' }}>
+            Welcome {user.email}
+          </h6>
+        )}
 
-      <div style={{ overflowX: 'auto' }}>
-        <h1>Live Bracket</h1>
-        <Bracket
-          mobileBreakpoint={0}
-          roundTitleComponent={CustomRoundTitle}
-          renderSeedComponent={CustomSeed}
-          rounds={getRounds(winnersBracket, props.teamCount)}
-        />
+        <h1 className='basketball2 fs-huge mb-5 text-center'>
+          Live Bracket
+          <img
+            style={{ width: '40px' }}
+            src='/ucvts-madness/icons8-basketball-64 (1).png'
+          ></img>
+        </h1>
+
+        <div
+          className='p-3'
+          style={{
+            backgroundColor: '#81b6fc',
+            overflowX: 'auto',
+            margin: '0 -1.25rem',
+            boxShadow: '0px 0px 11px 2px rgba(0,0,0,0.2)',
+          }}
+        >
+          <Bracket
+            mobileBreakpoint={0}
+            roundTitleComponent={CustomRoundTitle}
+            renderSeedComponent={CustomSeed}
+            rounds={getRounds(winnersBracket, props.teamCount)}
+          />
+        </div>
+
+        <h2 className=' mt-5 basketball'>Other Games</h2>
+
+        <div className='row m-1 justify-content-center'>
+          {otherGames.map((game: GameType, i: number) => {
+            if (!game.description) {
+              return
+            }
+
+            return (
+              <div className='col p-2 m-2 text-center bg-primary'>
+                <h1>{game.description}</h1>
+                <h6>
+                  {game.team1Name} ({game.team2Name})
+                </h6>
+                <h6>vs.</h6>
+                <h6>
+                  {game.team1Points} ({game.team2Points})
+                </h6>
+              </div>
+            )
+          })}
+        </div>
       </div>
-
-      <h1>Other Games</h1>
-
-      <Space>
-        {otherGames.map((game: GameType, i: number) => {
-          if (!game.description) {
-            return
-          }
-
-          return (
-            <Space
-              key={i}
-              direction='vertical'
-              style={{ backgroundColor: '#1677ff' }}
-            >
-              <h1>{game.description}</h1>
-              <p>
-                {game.team1Name} ({game.team2Name}) vs. {game.team1Points} (
-                {game.team2Points})
-              </p>
-            </Space>
-          )
-        })}
-      </Space>
     </>
   )
 }

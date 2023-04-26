@@ -53,9 +53,14 @@ export default function LeaderboardPage(props: {
   data: { name: string; points: number }[]
 }) {
   return (
-    <div className='my-4'>
-      <h1 className='text-center'>Leaderboard</h1>
-
+    <div className='container my-4'>
+      <h1 className='text-center basketball2 fs-huge mb-4'>
+        Leaderboard
+        <img
+          style={{ width: '40px' }}
+          src='/ucvts-madness/icons8-basketball-64 (1).png'
+        ></img>
+      </h1>
       <Table
         pagination={{
           defaultPageSize: 10,
