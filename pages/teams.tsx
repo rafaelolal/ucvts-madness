@@ -7,6 +7,7 @@ const columns = [
     title: 'Team Name',
     dataIndex: 'name',
     key: 'name',
+    width: '40%',
   },
   {
     title: 'Players',
@@ -21,11 +22,23 @@ const columns = [
 
 export default function TeamsPage(props: { teams: TeamType[] }) {
   return (
-    <>
-      <h1 className='text-center my-4'>Teams</h1>
-
-      <Table pagination={false} dataSource={props.teams} columns={columns} />
-    </>
+    <div className='container my-4'>
+      <h1 className='text-center basketball2 fs-huge mb-4'>
+        Teams
+        <img
+          style={{ width: '40px' }}
+          src='/ucvts-madness/icons8-basketball-64 (1).png'
+        ></img>
+      </h1>
+      <div className='col-12 col-md-7 mx-auto'>
+        <Table
+          bordered={true}
+          pagination={false}
+          dataSource={props.teams}
+          columns={columns}
+        />
+      </div>
+    </div>
   )
 }
 

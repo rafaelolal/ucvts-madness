@@ -43,19 +43,19 @@ export default function Timer(props: {
   return (
     <>
       {props.canMakeBets ? (
-        <div className='col-11 mx-auto my-5'>
+        <div className='col-11 mx-auto mt-3 mb-5'>
           <div className='container-fluid bg-secondary rounded-2 shadow text-light p-3'>
-            <h2 className='mt-3 mb-4'>Time Until Tournament!</h2>
+            <h5 className='my-3 text-center'>Time Until Tournament!</h5>
             <div className='col-11 mx-auto'>
               <div
-                className='row flex-row justify-content-around my-4 rounded-1'
+                className='row flex-row justify-content-around my-2 rounded-1'
                 style={{ border: '2px solid #fff' }}
               >
                 <div className='col-auto px-2 py-3'>
                   <h3 className='fs-huge m-0 monospace'>
                     {tournamentDatetime.days}
                   </h3>
-                  <h6 className='fs-tiny m-0'>DAYS</h6>
+                  <h6 className='fs-tiny m-0 text-center'>DAYS</h6>
                 </div>
                 <h3 className='colon fs-huge'>:</h3>
 
@@ -63,21 +63,21 @@ export default function Timer(props: {
                   <h3 className='fs-huge m-0 monospace'>
                     {tournamentDatetime.hours}
                   </h3>
-                  <h6 className='fs-tiny m-0'>HOURS</h6>
+                  <h6 className='fs-tiny m-0 text-center'>HOURS</h6>
                 </div>
                 <h3 className='colon fs-huge'>:</h3>
                 <div className='col-auto  px-2 py-3'>
                   <h3 className='fs-huge m-0 monospace'>
                     {tournamentDatetime.minutes}
                   </h3>
-                  <h6 className='fs-tiny m-0'>MINUTES</h6>
+                  <h6 className='fs-tiny m-0 text-center'>MINUTES</h6>
                 </div>
                 <h3 className='colon fs-huge'>:</h3>
                 <div className='col-auto px-2 py-3'>
                   <h3 className='fs-huge m-0 monospace'>
                     {tournamentDatetime.seconds}
                   </h3>
-                  <h6 className='fs-tiny m-0'>SECONDS</h6>
+                  <h6 className='fs-tiny m-0 text-centers'>SECONDS</h6>
                 </div>
               </div>
             </div>

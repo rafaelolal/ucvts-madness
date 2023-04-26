@@ -22,7 +22,7 @@ const httpsAgent = new Agent({
 })
 
 const CustomRoundTitle = (title: React.ReactNode, roundIndex: number) => {
-  return <h3 style={{ textAlign: 'center' }}>{title}</h3>
+  return <h6 style={{ textAlign: 'center' }}>{title}</h6>
 }
 
 const CustomSeed = ({
@@ -210,30 +210,46 @@ export default function BetsPage(props: {
   }
 
   return (
-    <>
-      <h1 className='fw-bold'>Bets for Winners' Bracket Only</h1>
+    <div className='container my-4'>
+      <h1 className='text-center basketball2 fs-huge m-0'>
+        Bets
+        <img
+          style={{ width: '40px' }}
+          src='/ucvts-madness/icons8-basketball-64 (1).png'
+        ></img>
+      </h1>
+      <h5 className='regular text-center fs-tiny mb-4 text-grey'>
+        Winners' Bracket Only{' '}
+      </h5>
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 
-      <h3>Your Bets</h3>
+      <h5>Your Bets</h5>
 
-      <div style={{ overflowX: 'auto' }}>
-        <Form form={form}>
-          <Bracket
-            mobileBreakpoint={0}
-            roundTitleComponent={CustomRoundTitle}
-            renderSeedComponent={CustomSeed}
-            rounds={getRounds(
-              props.studentTeams.length,
-              props.studentTeams.concat(props.teacherTeams),
-              betData
-            )}
-          />
-        </Form>
+      <div
+        className='p-3'
+        style={{
+          backgroundColor: '#81b6fc',
+          overflowX: 'auto',
+          margin: '0 -1.25rem',
+          boxShadow: '0px 0px 11px 2px rgba(0,0,0,0.2)',
+        }}
+      >
+        <Bracket
+          mobileBreakpoint={0}
+          roundTitleComponent={CustomRoundTitle}
+          renderSeedComponent={CustomSeed}
+          rounds={getRounds(
+            props.studentTeams.length,
+            props.studentTeams.concat(props.teacherTeams),
+            betData
+          )}
+        />
       </div>
 
       {canMakeBets && !betData && (
         <Button
+          className='mt-4'
           type='primary'
           loading={isBetsSubmitButtonLoading}
           onClick={() => {
@@ -244,7 +260,7 @@ export default function BetsPage(props: {
           Place Bets
         </Button>
       )}
-    </>
+    </div>
   )
 }
 
