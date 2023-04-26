@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button } from 'antd'
+import { Button, Spin } from 'antd'
 import styled from 'styled-components'
 import { useState } from 'react'
 import Head from 'next/head'
@@ -25,14 +25,12 @@ export default function SignInRequired(props: { message: string }) {
       <Container>
         <h1 className='text-center mx-5 mb-4'>{props.message}</h1>
 
-        <Link href='/'>
-          <Button
-            type='primary'
-            loading={isSignInButtonLoading}
-            onClick={() => setIsSignInButtonLoading(true)}
-          >
-            Sign In
-          </Button>
+        <Link
+          href='/'
+          className={`btn btn-primary`}
+          onClick={() => setIsSignInButtonLoading(true)}
+        >
+          {isSignInButtonLoading ? <Spin /> : 'Sign In'}
         </Link>
       </Container>
     </>

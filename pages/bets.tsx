@@ -223,13 +223,16 @@ export default function BetsPage(props: {
           src='/ucvts-madness/icons8-basketball-64 (1).png'
         ></img>
       </h1>
-      <h5 className='regular text-center fs-tiny mb-4 text-grey'>
-        Winners' Bracket Only{' '}
-      </h5>
 
       <Timer canMakeBets={canMakeBets} setCanMakeBets={setCanMakeBets} />
 
       <h3>Your Bets</h3>
+
+      <p>
+        Place your bets wisely, you can only do it once! Pay close attention to
+        the teams playing each game. The games are labeled in the live bracket
+        page. If there are no teams for a game, bet N/A.
+      </p>
 
       <div
         className='p-3'
