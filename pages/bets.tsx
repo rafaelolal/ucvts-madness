@@ -53,8 +53,10 @@ const CustomSeed = ({
             >
               {[{ name: 'N/A', players: [''] }]
                 .concat(seed.allTeamNames)
-                .map((team) => (
-                  <Select.Option value={team.name}>{team.name}</Select.Option>
+                .map((team, i) => (
+                  <Select.Option key={i} value={team.name}>
+                    {team.name}
+                  </Select.Option>
                 ))}
             </Select>
           </Form.Item>

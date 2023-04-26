@@ -34,6 +34,7 @@ const CustomSeed = ({
         <div>
           {seed.teams.map((team, i) => (
             <SeedTeam
+              key={i}
               className='justify-content-between'
               style={{
                 backgroundColor:
@@ -41,7 +42,7 @@ const CustomSeed = ({
               }}
             >
               <Typography.Text style={{ color: 'white' }}>
-                {addEllipsis(team.name, 25) || '\xa0'}
+                {addEllipsis(team.name as string, 25) || '\xa0'}
               </Typography.Text>
               <Typography.Text style={{ color: 'white' }}>
                 {team.points}
@@ -155,7 +156,7 @@ export default function BracketPage(props: {
       .catch((error) => {
         throw error
       })
-    setTimeout(mutateData, 30 * 1000)
+    setTimeout(mutateData, 120 * 1000)
   }
 
   if (winnersBracketError || otherGamesError) {
@@ -185,13 +186,17 @@ export default function BracketPage(props: {
       <h1>Other Games</h1>
 
       <Space>
-        {otherGames.map((game) => {
+        {otherGames.map((game: GameType, i: number) => {
           if (!game.description) {
             return
           }
 
           return (
-            <Space direction='vertical' style={{ backgroundColor: '#1677ff' }}>
+            <Space
+              key={i}
+              direction='vertical'
+              style={{ backgroundColor: '#1677ff' }}
+            >
               <h1>{game.description}</h1>
               <p>
                 {game.team1Name} ({game.team2Name}) vs. {game.team1Points} (

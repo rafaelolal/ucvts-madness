@@ -13,6 +13,7 @@ export default async function handler(
   } catch (error) {
     let message = 'Unknown Error'
     if (error instanceof Error) message = error.message
+    console.log({ error })
     res.status(500).json({ message: message })
   }
 }
